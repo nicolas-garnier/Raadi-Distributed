@@ -7,6 +7,10 @@ public class CrawlerVO {
         this.url = url;
     }
 
+    /**
+     * Getter for URL
+     * @return String url
+     */
     public String getUrl() {
         return url;
     }
