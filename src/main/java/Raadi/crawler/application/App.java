@@ -1,10 +1,16 @@
 package Raadi.crawler.application;
 
 
-public class App 
-{
-    public static void main( String[] args )
-    {
+/**
+ * Entry point for Crawler application.
+ */
+public class App {
+
+    /**
+     * Crawler application main function.
+     * @param args Arguments for main function.
+     */
+    public static void main( String[] args ) {
         System.out.println("Crawler started");
     }
 }
