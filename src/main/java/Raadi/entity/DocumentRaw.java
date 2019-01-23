@@ -1,5 +1,7 @@
 package Raadi.entity;
 
+import Raadi.crawler.domain.valueObjects.CrawlerVO;
+
 import java.util.HashSet;
 
 public class DocumentRaw {
@@ -9,7 +11,7 @@ public class DocumentRaw {
      */
     private String content;
     private String URL;
-    private HashSet<String> childrenURL;
+    private HashSet<CrawlerVO> childrenURL;
 
     /**
      * DocumentRaw content getter.
@@ -47,7 +49,7 @@ public class DocumentRaw {
      * DocumentRaw URL children getter.
      * @return the document's list of URL children.
      */
-    public HashSet<String> getChildrenURL() {
+    public HashSet<CrawlerVO> getChildrenURL() {
         return childrenURL;
     }
 
@@ -55,7 +57,7 @@ public class DocumentRaw {
      * DocumentRaw URL   setter
      * @param childrenURL is list of URL children
      */
-    public void setChildrenURL(HashSet<String> childrenURL) {
+    public void setChildrenURL(HashSet<CrawlerVO> childrenURL) {
         this.childrenURL = childrenURL;
     }
 

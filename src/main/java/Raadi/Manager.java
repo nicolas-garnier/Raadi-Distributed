@@ -1,7 +1,7 @@
 package Raadi;
 
 import Raadi.indexer.domain.CleanUp;
-import Raadi.crawler.domain.Crawler;
+import Raadi.crawler.domain.service.Crawler;
 import Raadi.entity.DocumentClean;
 import Raadi.entity.DocumentRaw;
 import Raadi.util.Converter;
@@ -20,12 +20,15 @@ public class Manager
 
 
     private Manager() {
+        // CRAWLER -> kafka
         this.linksTodo = new LinkedList<>();
         this.linksDone = new HashSet<>();
         this.documentRawList = new ArrayList<>();
+
         this.documentCleanList = new ArrayList<>();
         this.stopWords = Converter.StopWordsJsonToHashSet();
         this.synonyms = Converter.SynonymsCSVToHashMap();
+
         this.retroIndex = new HashMap<>();
     }
 
@@ -54,7 +57,7 @@ public class Manager
     }
 
     public void execute(String firstURL, int max_size) {
-        crawl(firstURL, max_size);
+        //crawl(firstURL, max_size);
         cleanup();
         fillRetroIndex();
 
@@ -64,26 +67,26 @@ public class Manager
 
     /**
      * Manager crawl function to fill the documentRawList.
-     * @param firstURL is the entry url.
-     * @param max_size is the maximun url number wanted.
-     */
-    private void crawl(String firstURL, int max_size) {
-        linksTodo.add(firstURL);
+     *  firstURL is the entry url.
+     *  max_size is the maximun url number wanted.
+        private void crawl(String firstURL, int max_size) {
+            linksTodo.add(firstURL);
 
-        while (documentRawList.size() < max_size && !linksTodo.isEmpty()) {
-            String url = linksTodo.poll();
+            while (documentRawList.size() < max_size && !linksTodo.isEmpty()) {
+                String url = linksTodo.poll();
 
-            if (!linksDone.contains(url)) {
-                DocumentRaw dr = Crawler.crawl(url);
-                if (dr != null) {
-                    documentRawList.add(dr);
-                    linksDone.add(url);
+                if (!linksDone.contains(url)) {
+                    DocumentRaw dr = Crawler.crawl(url);
+                    if (dr != null) {
+                        documentRawList.add(dr);
+                        linksDone.add(url);
 
-                    linksTodo.addAll(dr.getChildrenURL());
+                        linksTodo.addAll(dr.getChildrenURL());
+                    }
                 }
             }
         }
-    }
+     */
 
     public HashMap<String, ArrayList<DocumentClean>> getRetroIndex() {
         return retroIndex;
