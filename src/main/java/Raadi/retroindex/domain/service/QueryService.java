@@ -1,9 +1,9 @@
 package Raadi.retroindex.domain.service;
 
-import Raadi.indexer.domain.CleanUp;
 import Raadi.Manager;
 import Raadi.entity.DocumentClean;
 import Raadi.entity.TokenData;
+import Raadi.indexer.domain.service.Tokenization;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -29,7 +29,7 @@ public class QueryService
      */
     public void tokenization()
     {
-        this.vector = CleanUp.tokenization(this.query);
+        this.vector = Tokenization.tokenization(this.query);
         HashMap<String, ArrayList<DocumentClean>> retroIndex = Manager.getInstance().getRetroIndex();
 
         for(String queryToken : this.vector.keySet())

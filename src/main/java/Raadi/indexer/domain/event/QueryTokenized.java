@@ -1,4 +1,4 @@
 package Raadi.indexer.domain.event;
 
-public class CreateDocumentRaw {
+public class QueryTokenized {
 }

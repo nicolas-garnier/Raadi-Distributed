@@ -1,9 +1,9 @@
 package Raadi;
 
-import Raadi.indexer.domain.CleanUp;
 import Raadi.crawler.domain.service.Crawler;
 import Raadi.entity.DocumentClean;
 import Raadi.entity.DocumentRaw;
+import Raadi.indexer.domain.service.CleanUp;
 import Raadi.util.Converter;
 import java.util.*;
 
