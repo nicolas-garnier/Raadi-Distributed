@@ -1,6 +1,5 @@
 package Raadi.crawler.domain.service;
 
-import Raadi.crawler.domain.entity.CrawlerEntity;
 import Raadi.crawler.domain.valueObjects.CrawlerVO;
 import Raadi.entity.DocumentRaw;
 import org.jsoup.Jsoup;
@@ -12,7 +11,11 @@ import java.util.HashSet;
 
 public final class Crawler
 {
-
+    /**
+     * The crawl function
+     * @param crawlerVO Value Object with url in the content
+     * @return DocumentRaw : page informations
+     */
     public static DocumentRaw crawl(CrawlerVO crawlerVO)
     {
         DocumentRaw documentRaw = new DocumentRaw();

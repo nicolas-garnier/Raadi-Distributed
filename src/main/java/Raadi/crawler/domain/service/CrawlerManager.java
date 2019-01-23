@@ -4,9 +4,12 @@ import Raadi.crawler.domain.entity.CrawlerEntity;
 import Raadi.crawler.domain.event.DocumentRawCreated;
 import Raadi.crawler.domain.valueObjects.CrawlerVO;
 import Raadi.entity.DocumentRaw;
+import Raadi.kafkahandler.KProducer;
+import com.google.gson.Gson;
+import org.apache.kafka.clients.producer.Producer;
+import org.apache.kafka.clients.producer.ProducerRecord;
 
 public class CrawlerManager {
-
     private CrawlerEntity crawlerEntity;
 
     public CrawlerManager() {
@@ -14,38 +17,49 @@ public class CrawlerManager {
 
     }
 
+    /**
+     * Start the crawling on the url in parameter
+     * @param firstURL the url to start
+     * @param max_size Number of page wanted to visited
+     */
     private void start(String firstURL, int max_size) {
         CrawlerVO crawlerVO = new CrawlerVO(firstURL);
         this.crawlerEntity.linksTodo.add(crawlerVO);
+        int counter = 0;
 
-        while (this.crawlerEntity.documentRawList.size() < max_size && !this.crawlerEntity.linksTodo.isEmpty()) {
+        while (counter <= max_size && !this.crawlerEntity.linksTodo.isEmpty()) {
             CrawlerVO url = this.crawlerEntity.linksTodo.poll();
 
             if (!this.crawlerEntity.linksDone.contains(url)) {
                 DocumentRaw dr = Crawler.crawl(url);
                 if (dr != null) {
-                    this.crawlerEntity.documentRawList.add(dr);
                     this.crawlerEntity.linksDone.add(url);
+                    counter++;
 
                     for(String childURL : dr.getChildrenURL()) {
                         this.crawlerEntity.linksTodo.add(new CrawlerVO(childURL));
                     }
-
-                    /** Notifie application via Kafka
-                     * */
-                    DocumentRawCreated documentRawCreated = new DocumentRawCreated(dr);
-                    send(documentRawCreated);
+                    send(dr);
                 }
             }
         }
-        this.crawlerEntity.documentRawList.clear();
     }
 
-    public void send(DocumentRawCreated documentRaw) {
-        String topicName = "CRAWLER_EVENT";
-        //Producer<String, String> producer = kHandler.getkProducer().getProducer();
-        //producer.send(new ProducerRecord<>(topicName, documentRaw));
+    /**
+     * Notifie application via Kafka
+     * @param documentRaw Document want to send
+     */
+    public void send(DocumentRaw documentRaw) {
+        Producer<String, String> producer = new KProducer("9092").getProducer();
+        DocumentRawCreated documentRawCreated = new DocumentRawCreated(documentRaw);
+
+        String topicName = "DOCUMENT_RAW_CREATED";
+        Gson gson = new Gson();
+        String json = gson.toJson(documentRawCreated);
+
+        producer.send(new ProducerRecord<>(topicName, json));
+
         System.out.println("Crawler's message sent successfully");
-        //producer.close();
+        producer.close();
     }
 }
