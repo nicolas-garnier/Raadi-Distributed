@@ -5,11 +5,11 @@ import org.apache.kafka.clients.producer.Producer;
 
 import java.util.Properties;
 
-public class KProducer
+public class KProducer<T>
 {
 
     private String port;
-    private Producer<String, String> producer;
+    private Producer<String, T> producer;
 
     public KProducer(String port)
     {
@@ -40,11 +40,12 @@ public class KProducer
 
         props.put("value.serializer", "org.apache.kafka.common.serializa-tion.StringSerializer");
 
-        producer = new KafkaProducer<String, String>(props);
+        producer = new KafkaProducer<String, T>(props);
     }
 
 
-    public Producer<String, String> getProducer() {
+    public Producer<String, T> getProducer()
+    {
         return producer;
     }
 }

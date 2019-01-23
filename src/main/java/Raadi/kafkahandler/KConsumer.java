@@ -5,11 +5,11 @@ import org.apache.kafka.clients.consumer.KafkaConsumer;
 import java.util.Arrays;
 import java.util.Properties;
 
-public class KConsumer
+public class KConsumer<T>
 {
     private String topicName;
     private String port;
-    private KafkaConsumer<String, String> consumer;
+    private KafkaConsumer<String, T> consumer;
 
     public KConsumer(String topicName, String port)
     {
@@ -27,14 +27,14 @@ public class KConsumer
         props.put("key.deserializer", "org.apache.kafka.common.serializa-tion.StringDeserializer");
         props.put("value.deserializer", "org.apache.kafka.common.serializa-tion.StringDeserializer");
 
-        this.consumer = new KafkaConsumer<String, String>(props);
+        this.consumer = new KafkaConsumer<String, T>(props);
 
         //Kafka Consumer subscribes list of topics here.
         consumer.subscribe(Arrays.asList(this.topicName));
     }
 
 
-    public KafkaConsumer<String, String> getConsumer() {
+    public KafkaConsumer<String, T> getConsumer() {
         return consumer;
     }
 

@@ -1,6 +1,5 @@
 package Raadi.retroindex.domain.entity;
 
-import Raadi.Manager;
 import Raadi.entity.DocumentClean;
 
 import java.util.ArrayList;
