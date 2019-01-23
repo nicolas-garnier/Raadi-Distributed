@@ -6,10 +6,14 @@ public class DocumentRawCreated {
 
     private DocumentRaw documentRaw;
 
-    /**
-     * Class for the Event
-     * @param documentRaw page crawled
-     */
+    public DocumentRaw getDocumentRaw() {
+        return documentRaw;
+    }
+
+    public void setDocumentRaw(DocumentRaw documentRaw) {
+        this.documentRaw = documentRaw;
+    }
+
     public DocumentRawCreated(DocumentRaw documentRaw) {
         this.documentRaw = documentRaw;
     }
