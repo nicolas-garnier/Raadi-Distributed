@@ -13,9 +13,9 @@ public class CleanUp
 {
 
     /**
-     * cleanup
-     * @param documentRaw
-     * @return
+     * Clean up a raw document and convert it to clean document.
+     * @param documentRaw Raw document to clean up.
+     * @return DocumentClean.
      */
     public static DocumentClean cleanup(DocumentRaw documentRaw)
     {
@@ -24,53 +24,53 @@ public class CleanUp
         documentClean.setContent(documentRaw.getContent());
         documentClean.setChildrenURL(documentRaw.getChildrenURL());
         documentClean.setURL(documentRaw.getURL());
-        documentClean.setVector(tokenisation(documentClean.getContent()));
+        documentClean.setVector(tokenization(documentClean.getContent()));
 
         return documentClean;
     }
 
     /**
-     * tokenisation
-     * @param text
-     * @return HashMap<String, TokenData>
+     * Tokenize a string to return an HashMap of String and TokenData.
+     * @param text String text to tokenize.
+     * @return HashMap of String and TokenData.
      */
-    public static HashMap<String, TokenData> tokenisation(String text)
+    private static HashMap<String, TokenData> tokenization(String text)
     {
         HashMap<String, TokenData> vector = new HashMap<>();
         String[] arrWords = text.split(" ");
 
-        Double unitFrequence = 1.0/arrWords.length;
+        Double unitFrequency = 1.0/arrWords.length;
 
         for (int i = 0; i < arrWords.length; i++)
         {
             final int position = i;
             String token = arrWords[i];
 
-            // The word already exists
+            // The word already exists.
             if (vector.containsKey(arrWords[i]))
             {
-                // Push new position in array positions
+                // Push new position in array positions.
                 ArrayList<Integer> positions = vector.get(token).getPositions();
                 positions.add(position);
                 vector.get(token).setPositions(positions);
 
-                // Update the weight
+                // Update the weight.
                 Double weight = vector.get(token).getWeight();
-                weight += unitFrequence;
+                weight += unitFrequency;
                 vector.get(token).setWeight(weight);
             }
-            else // create the token
+            else // Create the token.
             {
-                // if is not a stop word
+                // If it is not a stop word.
                 if (!isStopWord(token))
                 {
-                    // Transform for stemming algo
+                    // Transform for stemming algorithm.
                     token = stemmingTransform(token);
 
-                    // Transform for synonym
+                    // Transform for synonym.
                     token = synonymTransform(token);
 
-                    TokenData tokenData = new TokenData(unitFrequence, new ArrayList<Integer>() {{
+                    TokenData tokenData = new TokenData(unitFrequency, new ArrayList<Integer>() {{
                         add(position);
                     }});
                     vector.put(token, tokenData);
@@ -84,9 +84,9 @@ public class CleanUp
 
 
     /**
-     * isStopWord
-     * @param word
-     * @return
+     * Check if a word is categorized as a stop word.
+     * @param word String word to check.
+     * @return True if it is a stop word, else false.
      */
     private static Boolean isStopWord(String word)
     {
@@ -94,9 +94,9 @@ public class CleanUp
     }
 
     /**
-     * stemmingTransform
-     * @param word
-     * @return String : Transformed stemming
+     * Stemming transformation process on a word.
+     * @param word String to transform.
+     * @return String transformed as stemming algorithm.
      */
     private static String stemmingTransform(String word)
     {
@@ -111,9 +111,9 @@ public class CleanUp
     }
 
     /**
-     * synonymTransform
-     * @param word
-     * @return String : Transform synonym
+     * Synonym transformation process on a word.
+     * @param word String to transform.
+     * @return String transformed as synonym.
      */
     private static String synonymTransform(String word)
     {
