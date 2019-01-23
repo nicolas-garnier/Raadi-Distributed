@@ -1,10 +1,8 @@
 package Raadi.retroindex.domain.service;
 
-import Raadi.Manager;
 import Raadi.entity.DocumentClean;
 import Raadi.entity.TokenData;
 import Raadi.indexer.domain.event.QueryTokenized;
-import Raadi.indexer.domain.service.Tokenization;
 import Raadi.kafkahandler.KConsumer;
 import Raadi.kafkahandler.KProducer;
 import Raadi.retroindex.domain.entity.RetroIndexEntity;

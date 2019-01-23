@@ -1,22 +1,15 @@
 package Raadi.indexer.application;
 
-import Raadi.Manager;
-import Raadi.retroindex.domain.service.QueryService;
+import Raadi.indexer.domain.service.DocumentEvent;
+import Raadi.indexer.domain.service.QueryEvent;
 
-public class App 
+public class App
 {
-    public static void main( String[] args ) {
-        Manager manager = Manager.getInstance();
-        manager.execute("https://news.ycombinator.com", 10);
-
-        /*QueryService query = new QueryService("moored");
-        query.tokenization();
-
-        for (String url : query.getQueryDocuments().keySet())
-        {
-            System.out.println(url);
-        }
-
-        System.out.println( "Hello World!" );*/
+    public static void main( String[] args )
+    {
+        DocumentEvent documentEvent = new DocumentEvent();
+        QueryEvent queryEvent = new QueryEvent();
+        documentEvent.subscribeDocumentRawCreated();
+        queryEvent.subscribeTokenizeQuery();
     }
 }

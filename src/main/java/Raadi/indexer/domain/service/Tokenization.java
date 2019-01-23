@@ -1,6 +1,5 @@
 package Raadi.indexer.domain.service;
 
-import Raadi.Manager;
 import Raadi.entity.TokenData;
 
 import java.util.ArrayList;
@@ -69,7 +68,7 @@ public class Tokenization {
      */
     private static Boolean isStopWord(String word)
     {
-        return Manager.getInstance().getStopWords().contains(word);
+        return IndexerManager.getInstance().getStopWords().contains(word);
     }
 
     /**
@@ -95,6 +94,6 @@ public class Tokenization {
      * @return String transformed as synonym.
      */
     private static String synonymTransform(String word) {
-        return Manager.getInstance().getSynonyms().getOrDefault(word, word);
+        return IndexerManager.getInstance().getSynonyms().getOrDefault(word, word);
     }
 }
