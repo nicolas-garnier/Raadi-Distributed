@@ -19,7 +19,7 @@ public class KProducer<T>
         Properties props = new Properties();
 
         //Assign localhost id
-        props.put("bootstrap.servers", "localhost:"+this.port);
+        props.put("bootstrap.servers", "127.0.0.1:"+this.port);
 
         //Set acknowledgements for producer requests.
         props.put("acks", "all");
@@ -36,9 +36,9 @@ public class KProducer<T>
         //The buffer.memory controls the total amount of memory available to the producer for buffering.
         props.put("buffer.memory", 33554432);
 
-        props.put("key.serializer", "org.apache.kafka.common.serializa-tion.StringSerializer");
+        props.put("key.serializer", "org.apache.kafka.common.serialization.StringSerializer");
 
-        props.put("value.serializer", "org.apache.kafka.common.serializa-tion.StringSerializer");
+        props.put("value.serializer", "org.apache.kafka.common.serialization.StringSerializer");
 
         producer = new KafkaProducer<String, T>(props);
     }

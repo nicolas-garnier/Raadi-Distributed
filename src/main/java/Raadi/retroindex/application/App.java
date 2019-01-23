@@ -3,11 +3,11 @@ package Raadi.retroindex.application;
 import Raadi.entity.DocumentClean;
 import Raadi.framework.RaadiFW;
 import Raadi.kafkahandler.KConsumer;
-import Raadi.kafkahandler.KHandler;
 import Raadi.kafkahandler.KProducer;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.producer.ProducerRecord;
+import org.apache.kafka.common.protocol.types.Field;
 
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
@@ -22,12 +22,17 @@ public class App
         DocumentClean documentClean = new DocumentClean();
         documentClean.setURL("https://google.com");
 
-        KProducer<DocumentClean> producer= new KProducer<>("9092");
+        //KProducer<DocumentClean> producer= new KProducer<>("9092");
 
-        producer.getProducer().send(new ProducerRecord<String, DocumentClean>("TEST", documentClean));
+        //producer.getProducer().send(new ProducerRecord<String, DocumentClean>("TEST", documentClean));
+        //System.out.println("Message sent successfully");
+
+        KProducer<String> producer = new KProducer<>("9092");
+        producer.getProducer().send(new ProducerRecord<>("TEST" ,"CACA"));
         System.out.println("Message sent successfully");
 
-
+        producer.getProducer().close();
+        /*
         KConsumer<DocumentClean> consumer = new KConsumer<>("TEST", "9092");
 
         while (true)
@@ -38,7 +43,7 @@ public class App
                 System.out.printf("offset = %d, key = %s, value = %s\n", record.offset(), record.key(), record.value().getURL());
             }
         }
-
+        */
 
         //raadiFW.bean();
         /*

@@ -15,9 +15,9 @@ public class CrawlerEvents {
 
     public void send(DocumentRaw documentRaw) {
         String topicName = "CRAWLER_EVENT";
-        Producer<String, String> producer = kHandler.getkProducer().getProducer();
-        producer.send(new ProducerRecord<>(topicName, documentRaw));
+        //Producer<String, String> producer = kHandler.getkProducer().getProducer();
+        //producer.send(new ProducerRecord<>(topicName, documentRaw));
         System.out.println("Crawler's message sent successfully");
-        producer.close();
+        //producer.close();
     }
 }
