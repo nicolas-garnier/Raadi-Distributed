@@ -22,16 +22,26 @@ public class App
         DocumentClean documentClean = new DocumentClean();
         documentClean.setURL("https://google.com");
 
-        //KProducer<DocumentClean> producer= new KProducer<>("9092");
+        /*
+        KProducer<DocumentClean> producer= new KProducer<>("9092");
 
-        //producer.getProducer().send(new ProducerRecord<String, DocumentClean>("TEST", documentClean));
-        //System.out.println("Message sent successfully");
-
-        KProducer<String> producer = new KProducer<>("9092");
-        producer.getProducer().send(new ProducerRecord<>("TEST" ,"CACA"));
+        producer.getProducer().send(new ProducerRecord<String, DocumentClean>("TEST", documentClean));
         System.out.println("Message sent successfully");
+        */
 
-        producer.getProducer().close();
+        KConsumer<String> consumer = new KConsumer<>("TEST", "9092");
+
+        while (true)
+        {
+            ConsumerRecords<String, String> records = consumer.getConsumer().poll(Duration.of(1000, ChronoUnit.MILLIS));
+            for (ConsumerRecord<String, String> record : records)
+            {
+                System.out.printf("offset = %d, key = %s, value = %s\n", record.offset(), record.key(), record.value());
+            }
+        }
+
+        //producer.getProducer().close();
+
         /*
         KConsumer<DocumentClean> consumer = new KConsumer<>("TEST", "9092");
 
@@ -44,6 +54,8 @@ public class App
             }
         }
         */
+
+
 
         //raadiFW.bean();
         /*
