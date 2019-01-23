@@ -13,12 +13,19 @@ import com.google.gson.reflect.TypeToken;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.producer.ProducerRecord;
+import scala.concurrent.Await;
+import spark.Request;
+import spark.Response;
+import spark.Route;
 
 import java.lang.reflect.Type;
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.function.Supplier;
 
 public class QueryService
 {
@@ -39,26 +46,36 @@ public class QueryService
         this.consumerQueryTokenized = new KConsumer<>("QUERY_TOKENIZED", "9092");
     }
 
+    public Route setQuery = (Request request, Response response) -> {
+        request.params("query");
+        Thread.sleep(1000);
+        return "ALUTTTT";
+    };
+
     /**
-     *
+     * setQuery
      * @param query
+     * @param response
      */
-    public void setQuery(String query)
+    public void setQuery(String query, Response response)
     {
        this.producer.getProducer().send(new ProducerRecord<>("TOKENIZE_TOKEN", query));
        this.producer.getProducer().close();
-
-       this.subscribeQueryTokenized();
+       this.subscribeQueryTokenized(response);
     }
 
     /**
      * subscribeQueryTokenized
+     * @param response
      */
-    private void subscribeQueryTokenized()
+    private void subscribeQueryTokenized(Response response)
     {
         while (true)
         {
-            ConsumerRecords<String, String> records = this.consumerQueryTokenized.getConsumer().poll(Duration.of(1000, ChronoUnit.MILLIS));
+            ConsumerRecords<String, String> records = this.consumerQueryTokenized
+                                                        .getConsumer()
+                                                        .poll(Duration.of(1000, ChronoUnit.MILLIS));
+
             for (ConsumerRecord<String, String> record : records)
             {
                 Gson gson = new Gson();
@@ -73,7 +90,9 @@ public class QueryService
 
 
     /**
-     * ProcessTokenizedQuery
+     * processTokenizedQuery
+     * @param vector
+     * @return
      */
     public HashMap<String, DocumentClean> processTokenizedQuery(HashMap<String, TokenData> vector)
     {

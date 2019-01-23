@@ -9,7 +9,7 @@ public class App
         Manager manager = Manager.getInstance();
         manager.execute("https://news.ycombinator.com", 10);
 
-        QueryService query = new QueryService("moored");
+        /*QueryService query = new QueryService("moored");
         query.tokenization();
 
         for (String url : query.getQueryDocuments().keySet())
@@ -17,6 +17,6 @@ public class App
             System.out.println(url);
         }
 
-        System.out.println( "Hello World!" );
+        System.out.println( "Hello World!" );*/
     }
 }
