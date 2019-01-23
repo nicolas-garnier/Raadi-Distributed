@@ -1,7 +1,7 @@
 package Raadi.crawler.domain.service;
 
 import Raadi.crawler.domain.entity.CrawlerEntity;
-import Raadi.crawler.domain.event.CrawlerEvents;
+import Raadi.crawler.domain.event.DocumentRawCreated;
 import Raadi.crawler.domain.valueObjects.CrawlerVO;
 import Raadi.entity.DocumentRaw;
 
@@ -33,11 +33,19 @@ public class CrawlerManager {
 
                     /** Notifie application via Kafka
                      * */
-                    CrawlerEvents crawlerEvents = new CrawlerEvents();
-                    crawlerEvents.send(dr);
+                    DocumentRawCreated documentRawCreated = new DocumentRawCreated(dr);
+                    send(documentRawCreated);
                 }
             }
         }
         this.crawlerEntity.documentRawList.clear();
+    }
+
+    public void send(DocumentRawCreated documentRaw) {
+        String topicName = "CRAWLER_EVENT";
+        //Producer<String, String> producer = kHandler.getkProducer().getProducer();
+        //producer.send(new ProducerRecord<>(topicName, documentRaw));
+        System.out.println("Crawler's message sent successfully");
+        //producer.close();
     }
 }

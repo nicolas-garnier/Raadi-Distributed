@@ -1,40 +1,20 @@
-package Raadi.indexer.domain;
+package Raadi.indexer.domain.service;
 
 import Raadi.Manager;
-import Raadi.entity.DocumentClean;
-import Raadi.entity.DocumentRaw;
 import Raadi.entity.TokenData;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.regex.Pattern;
 
-public class CleanUp
-{
-
-    /**
-     * Clean up a raw document and convert it to clean document.
-     * @param documentRaw Raw document to clean up.
-     * @return DocumentClean.
-     */
-    public static DocumentClean cleanup(DocumentRaw documentRaw)
-    {
-        DocumentClean documentClean = new DocumentClean();
-
-        documentClean.setContent(documentRaw.getContent());
-        documentClean.setChildrenURL(documentRaw.getChildrenURL());
-        documentClean.setURL(documentRaw.getURL());
-        documentClean.setVector(tokenization(documentClean.getContent()));
-
-        return documentClean;
-    }
+public class Tokenization {
 
     /**
      * Tokenize a string to return an HashMap of String and TokenData.
      * @param text String text to tokenize.
      * @return HashMap of String and TokenData.
      */
-    private static HashMap<String, TokenData> tokenization(String text)
+    public static HashMap<String, TokenData> tokenization(String text)
     {
         HashMap<String, TokenData> vector = new HashMap<>();
         String[] arrWords = text.split(" ");
@@ -82,7 +62,6 @@ public class CleanUp
         return vector;
     }
 
-
     /**
      * Check if a word is categorized as a stop word.
      * @param word String word to check.
@@ -115,8 +94,7 @@ public class CleanUp
      * @param word String to transform.
      * @return String transformed as synonym.
      */
-    private static String synonymTransform(String word)
-    {
+    private static String synonymTransform(String word) {
         return Manager.getInstance().getSynonyms().getOrDefault(word, word);
     }
 }

@@ -62,7 +62,7 @@ public class App
         manager.execute("https://news.ycombinator.com", 10);
 
         QueryService query = new QueryService("moored");
-        query.tokenisation();
+        query.tokenization();
 
         for (String url : query.getQueryDocuments().keySet())
         {
