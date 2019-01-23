@@ -34,7 +34,7 @@ public class CleanUp
      * @param text String text to tokenize.
      * @return HashMap of String and TokenData.
      */
-    private static HashMap<String, TokenData> tokenization(String text)
+    public static HashMap<String, TokenData> tokenization(String text)
     {
         HashMap<String, TokenData> vector = new HashMap<>();
         String[] arrWords = text.split(" ");
