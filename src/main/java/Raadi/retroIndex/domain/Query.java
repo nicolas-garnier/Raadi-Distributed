@@ -1,7 +1,9 @@
-package Raadi.domain;
+package Raadi.retroIndex.domain;
 
-import Raadi.domain.model.DocumentClean;
-import Raadi.domain.model.TokenData;
+import Raadi.indexer.domain.CleanUp;
+import Raadi.Manager;
+import Raadi.entity.DocumentClean;
+import Raadi.entity.TokenData;
 
 import java.util.ArrayList;
 import java.util.HashMap;

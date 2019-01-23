@@ -1,11 +1,10 @@
-package Raadi.domain;
+package Raadi.crawler.domain;
 
-import Raadi.domain.model.DocumentRaw;
+import Raadi.entity.DocumentRaw;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
-import org.jsoup.HttpStatusException;
 
 import java.util.HashSet;
 

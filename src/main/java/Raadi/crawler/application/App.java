@@ -1,7 +1,7 @@
-package Raadi.application;
+package Raadi.crawler.application;
 
-import Raadi.domain.Manager;
-import Raadi.domain.Query;
+import Raadi.Manager;
+import Raadi.retroIndex.domain.Query;
 
 public class App 
 {

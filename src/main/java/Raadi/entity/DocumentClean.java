@@ -1,4 +1,4 @@
-package Raadi.domain.model;
+package Raadi.entity;
 
 import java.util.HashMap;
 import java.util.HashSet;
