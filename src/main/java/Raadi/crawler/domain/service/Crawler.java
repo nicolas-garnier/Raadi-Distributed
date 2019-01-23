@@ -25,10 +25,10 @@ public final class Crawler
 
             // Get all the url linked in the page
             Elements links = doc.select("a[href]");
-            HashSet<CrawlerVO> childrenURL = new HashSet<>();
+            HashSet<String> childrenURL = new HashSet<>();
             for (Element link : links) {
                 String tmp = link.attr("abs:href");
-                childrenURL.add(new CrawlerVO(tmp));
+                childrenURL.add(tmp);
             }
 
             // Fill the document with several informations : url, content, children urls

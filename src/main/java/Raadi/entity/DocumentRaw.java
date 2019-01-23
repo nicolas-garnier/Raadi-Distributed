@@ -1,6 +1,6 @@
 package Raadi.entity;
 
-import Raadi.crawler.domain.valueObjects.CrawlerVO;
+import org.apache.kafka.common.protocol.types.Field;
 
 import java.util.HashSet;
 
@@ -11,7 +11,7 @@ public class DocumentRaw {
      */
     private String content;
     private String URL;
-    private HashSet<CrawlerVO> childrenURL;
+    private HashSet<String> childrenURL;
 
     /**
      * DocumentRaw content getter.
@@ -49,7 +49,7 @@ public class DocumentRaw {
      * DocumentRaw URL children getter.
      * @return the document's list of URL children.
      */
-    public HashSet<CrawlerVO> getChildrenURL() {
+    public HashSet<String> getChildrenURL() {
         return childrenURL;
     }
 
@@ -57,7 +57,7 @@ public class DocumentRaw {
      * DocumentRaw URL   setter
      * @param childrenURL is list of URL children
      */
-    public void setChildrenURL(HashSet<CrawlerVO> childrenURL) {
+    public void setChildrenURL(HashSet<String> childrenURL) {
         this.childrenURL = childrenURL;
     }
 

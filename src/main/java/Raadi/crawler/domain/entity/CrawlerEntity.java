@@ -11,6 +11,7 @@ import java.util.Queue;
 public class CrawlerEntity {
     public Queue<CrawlerVO> linksTodo;
     public HashSet<CrawlerVO> linksDone;
+
     public ArrayList<DocumentRaw> documentRawList;
 
     public CrawlerEntity() {
