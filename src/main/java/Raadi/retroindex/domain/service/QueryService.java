@@ -27,7 +27,7 @@ public class QueryService
     /**
      *
      */
-    public void tokenisation()
+    public void tokenization()
     {
         this.vector = CleanUp.tokenization(this.query);
         HashMap<String, ArrayList<DocumentClean>> retroIndex = Manager.getInstance().getRetroIndex();
