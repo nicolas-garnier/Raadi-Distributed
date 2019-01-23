@@ -8,18 +8,16 @@ import java.util.Properties;
 public class KProducer<T>
 {
 
-    private String port;
     private Producer<String, T> producer;
 
     public KProducer(String port)
     {
-        this.port = port;
 
         // create instance for properties to access producer configs
         Properties props = new Properties();
 
         //Assign localhost id
-        props.put("bootstrap.servers", "127.0.0.1:"+this.port);
+        props.put("bootstrap.servers", "127.0.0.1:"+ port);
 
         //Set acknowledgements for producer requests.
         props.put("acks", "all");
@@ -40,7 +38,7 @@ public class KProducer<T>
 
         props.put("value.serializer", "org.apache.kafka.common.serialization.StringSerializer");
 
-        producer = new KafkaProducer<String, T>(props);
+        producer = new KafkaProducer<>(props);
     }
 
 
