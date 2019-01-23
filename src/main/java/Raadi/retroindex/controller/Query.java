@@ -4,10 +4,12 @@ import Raadi.retroindex.domain.service.QueryService;
 
 import static spark.Spark.get;
 
-public class Query {
-
+public class Query
+{
     public static void main(String[] args) {
         QueryService service = new QueryService();
+        service.start();
+
         get("/", service.setQuery);
     }
 }
