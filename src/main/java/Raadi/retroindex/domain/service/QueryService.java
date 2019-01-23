@@ -1,4 +1,4 @@
-package Raadi.retroIndex.domain;
+package Raadi.retroindex.domain.service;
 
 import Raadi.indexer.domain.CleanUp;
 import Raadi.Manager;
@@ -8,7 +8,7 @@ import Raadi.entity.TokenData;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class Query
+public class QueryService
 {
     private String query;
     private HashMap<String, TokenData> vector;
@@ -18,7 +18,7 @@ public class Query
      *
      * @param query
      */
-    public Query(String query)
+    public QueryService(String query)
     {
         this.query = query;
         this.queryDocuments = new HashMap<>();

@@ -1,21 +1,26 @@
-package Raadi.retroIndex.application;
+package Raadi.retroindex.application;
 
-import Raadi.Manager;
-import Raadi.retroIndex.domain.Query;
+import Raadi.framework.RaadiFW;
+
 
 public class App 
 {
-    public static void main( String[] args ) {
-        Manager manager = Manager.getInstance();
+    public static void main(String[] args)
+    {
+        RaadiFW raadiFW = new RaadiFW();
+
+        //raadiFW.bean();
+        /*
         manager.execute("https://news.ycombinator.com", 10);
 
-        Query query = new Query("moored");
+        QueryService query = new QueryService("moored");
         query.tokenisation();
 
         for (String url : query.getQueryDocuments().keySet())
         {
             System.out.println(url);
         }
+        */
 
         System.out.println( "Hello World!" );
     }

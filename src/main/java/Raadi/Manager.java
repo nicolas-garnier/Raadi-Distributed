@@ -100,7 +100,7 @@ public class Manager
     }
 
     /**
-     * retroIndex content setter.
+     * retroindex content setter.
      */
     private void fillRetroIndex() {
         for (DocumentClean dc : documentCleanList) {
