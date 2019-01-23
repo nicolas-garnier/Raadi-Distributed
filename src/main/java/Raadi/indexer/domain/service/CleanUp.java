@@ -1,10 +1,7 @@
 package Raadi.indexer.domain.service;
 
-import Raadi.Manager;
 import Raadi.entity.DocumentClean;
 import Raadi.entity.DocumentRaw;
-
-import java.util.regex.Pattern;
 
 public class CleanUp {
 
