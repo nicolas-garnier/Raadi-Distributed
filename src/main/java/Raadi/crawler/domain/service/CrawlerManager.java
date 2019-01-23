@@ -6,8 +6,11 @@ import Raadi.crawler.domain.valueObjects.CrawlerVO;
 import Raadi.entity.DocumentRaw;
 import Raadi.kafkahandler.KProducer;
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.ProducerRecord;
+
+import java.lang.reflect.Type;
 
 public class CrawlerManager {
     private CrawlerEntity crawlerEntity;
@@ -55,7 +58,8 @@ public class CrawlerManager {
 
         String topicName = "DOCUMENT_RAW_CREATED";
         Gson gson = new Gson();
-        String json = gson.toJson(documentRawCreated);
+        Type type = new TypeToken<DocumentRawCreated>(){}.getType();
+        String json = gson.toJson(documentRawCreated, type);
 
         producer.send(new ProducerRecord<>(topicName, json));
 
