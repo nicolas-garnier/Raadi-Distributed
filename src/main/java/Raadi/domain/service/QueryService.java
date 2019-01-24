@@ -1,9 +1,11 @@
 package Raadi.domain.service;
 
+import Raadi.domain.command.ProcessQuery;
 import Raadi.domain.command.TokenizeQuery;
 import Raadi.domain.entity.DocumentCleanEntity;
 import Raadi.domain.entity.RetroIndexEntity;
 import Raadi.domain.entity.TokenDataEntity;
+import Raadi.domain.event.QueryResponse;
 import Raadi.domain.event.QueryTokenized;
 import Raadi.kafkahandler.KConsumer;
 import Raadi.kafkahandler.KProducer;
@@ -19,26 +21,14 @@ import spark.Route;
 import java.lang.reflect.Type;
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
 import java.util.HashMap;
 
 
 public class QueryService
 {
-    private QueryService()
+    public QueryService()
     {
     }
-
-    public static QueryService getInstance()
-    {
-        return QueryService.InstanceHolder.instance;
-    }
-
-    private static class InstanceHolder
-    {
-        private final static QueryService instance = new QueryService();
-    }
-
 
     /**
      * Query service setQuery
@@ -56,12 +46,13 @@ public class QueryService
         Type type = new TypeToken<TokenizeQuery>() {}.getType();
         String json = gson.toJson(tokenizeQuery, type);
 
+        // Step 1
         producer.getProducer().send(new ProducerRecord<>("TOKENIZE_QUERY", json));
         producer.getProducer().close();
         System.out.println("QUERY : "+query);
-        this.subscribeQueryTokenized();
+        return this.subscribeQueryTokenized();
 
-        return "finish";
+        //return "finish";
     };
 
 
@@ -77,6 +68,7 @@ public class QueryService
         {
             ConsumerRecords<String, String> records = consumer.getConsumer().poll(Duration.of(100, ChronoUnit.MILLIS));
 
+            // Step 2
             for (ConsumerRecord<String, String> record : records)
             {
                 System.out.println("WESH");
@@ -84,41 +76,46 @@ public class QueryService
                 Type type = new TypeToken<QueryTokenized>(){}.getType();
                 QueryTokenized queryTokenized = gson.fromJson(record.value(), type);
                 System.out.println("QUERY TOKENIZED");
-                return this.processTokenizedQuery(queryTokenized.getVector());
+                this.sendTokenizedQuery(queryTokenized.getVector());
+                return this.subscribeQueryResponse();
+
             }
         }
     }
 
 
-    /**
-     * Query service processTokenizedQuery
-     * @param vector Hash map token data
-     * @return HashMap document clean
-     */
-    public HashMap<String, DocumentCleanEntity> processTokenizedQuery(HashMap<String, TokenDataEntity> vector)
+    private void sendTokenizedQuery(HashMap<String, TokenDataEntity> vector)
     {
+        KProducer producer = new KProducer();
+        ProcessQuery processQuery = new ProcessQuery(vector);
+        Gson gson = new Gson();
+        Type type = new TypeToken<ProcessQuery>() {}.getType();
+        String json = gson.toJson(processQuery, type);
 
-        HashMap<String, DocumentCleanEntity> responseDocuments = new HashMap<>();
-        HashMap<String, ArrayList<DocumentCleanEntity>> retroIndex = RetroIndexEntity.getInstance().getRetroIndex();
+        // Step 3
+        producer.getProducer().send(new ProducerRecord<>("PROCESS_QUERY", json));
+        producer.getProducer().close();
+    }
 
-        //System.out.println(vector);
 
-        if (vector == null)
-            return responseDocuments;
+    private HashMap<String, DocumentCleanEntity> subscribeQueryResponse()
+    {
+        KConsumer consumer = new KConsumer("QUERY_RESPONSE");
 
-        for(String queryToken : vector.keySet())
+        while (true)
         {
-            if (retroIndex.containsKey(queryToken))
+            ConsumerRecords<String, String> records = consumer.getConsumer().poll(Duration.of(100, ChronoUnit.MILLIS));
+
+            // Step 4
+            for (ConsumerRecord<String, String> record : records)
             {
-                for (DocumentCleanEntity documentClean : retroIndex.get(queryToken))
-                {
-                    responseDocuments.put(documentClean.getURL(), documentClean);
-                }
+                Gson gson = new Gson();
+                Type type = new TypeToken<QueryResponse>(){}.getType();
+                QueryResponse queryResponse = gson.fromJson(record.value(), type);
+                System.out.println("QUERY RESPONSE");
+                return queryResponse.getResponses();
             }
         }
-
-        System.out.println(responseDocuments);
-        return responseDocuments;
     }
 
 }
