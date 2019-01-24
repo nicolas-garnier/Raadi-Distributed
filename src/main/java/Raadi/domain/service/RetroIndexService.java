@@ -29,15 +29,18 @@ public class RetroIndexService
     /**
      * Attributes.
      */
+    private RetroIndexEntity retroIndexEntity;
     private KConsumer consumerDocumentCleanCreated;
     private KConsumer consumerProcessQuery;
 
     /**
      * Retro indexer service constructor.
      */
-    public RetroIndexService() {
-        consumerDocumentCleanCreated = new KConsumer("DOCUMENT_CLEAN_CREATED");
-        consumerProcessQuery = new KConsumer("PROCESS_QUERY");
+    public RetroIndexService(RetroIndexEntity retroIndexEntity) {
+
+        this.retroIndexEntity = retroIndexEntity;
+        this.consumerDocumentCleanCreated = new KConsumer("DOCUMENT_CLEAN_CREATED");
+        this.consumerProcessQuery = new KConsumer("PROCESS_QUERY");
     }
 
     /**
@@ -117,40 +120,32 @@ public class RetroIndexService
         for (String key : documentClean.getVector().keySet()) {
 
             ArrayList<DocumentCleanEntity> value = new ArrayList<>();
-            HashMap<String, ArrayList<DocumentCleanEntity>> retroIndex = RetroIndexEntity.getInstance().getRetroIndex();
+            HashMap<String, ArrayList<DocumentCleanEntity>> retroIndex = retroIndexEntity.getRetroIndex();
 
             if (retroIndex.containsKey(key)) {
                 value = retroIndex.get(key);
             }
             value.add(documentClean);
             retroIndex.put(key, value);
-            RetroIndexEntity.getInstance().setRetroIndex(retroIndex);
+            retroIndexEntity.setRetroIndex(retroIndex);
         }
     }
 
-    public HashMap<String, DocumentCleanEntity> processQuery(HashMap<String, TokenDataEntity> vector)
-    {
+    private HashMap<String, DocumentCleanEntity> processQuery(HashMap<String, TokenDataEntity> vector) {
 
         HashMap<String, DocumentCleanEntity> responseDocuments = new HashMap<>();
-
-
-        HashMap<String, ArrayList<DocumentCleanEntity>> retroIndex = RetroIndexEntity.getInstance().getRetroIndex();
-
+        HashMap<String, ArrayList<DocumentCleanEntity>> retroIndex = retroIndexEntity.getRetroIndex();
 
         if (vector == null)
             return responseDocuments;
 
-        for(String queryToken : vector.keySet())
-        {
-            if (retroIndex.containsKey(queryToken))
-            {
-                for (DocumentCleanEntity documentClean : retroIndex.get(queryToken))
-                {
+        for(String queryToken : vector.keySet()) {
+            if (retroIndex.containsKey(queryToken)) {
+                for (DocumentCleanEntity documentClean : retroIndex.get(queryToken)) {
                     responseDocuments.put(documentClean.getURL(), documentClean);
                 }
             }
         }
-
         System.out.println(responseDocuments);
         return responseDocuments;
     }
