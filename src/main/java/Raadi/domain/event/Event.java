@@ -1,6 +1,13 @@
 package Raadi.domain.event;
 
-public interface Event
-{
+import java.util.Date;
 
+public abstract class Event
+{
+    private Date dateCreated;
+
+    protected Event()
+    {
+        this.dateCreated = new Date();
+    }
 }

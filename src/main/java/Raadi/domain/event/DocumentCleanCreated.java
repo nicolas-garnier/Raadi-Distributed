@@ -2,16 +2,17 @@ package Raadi.domain.event;
 
 import Raadi.domain.entity.DocumentCleanEntity;
 
-public class DocumentCleanCreated implements Event
+public class DocumentCleanCreated extends Event
 {
     private DocumentCleanEntity documentClean;
 
     public DocumentCleanCreated(DocumentCleanEntity documentClean) {
+        super();
         this.documentClean = documentClean;
     }
 
     /**
-     * Getter
+     * Getter DocumentClean
      * @return
      */
     public DocumentCleanEntity getDocumentClean() {
@@ -19,10 +20,11 @@ public class DocumentCleanCreated implements Event
     }
 
     /**
-     * Setter
+     * Setter DocumentClean
      * @param documentClean
      */
     public void setDocumentClean(DocumentCleanEntity documentClean) {
         this.documentClean = documentClean;
     }
+
 }

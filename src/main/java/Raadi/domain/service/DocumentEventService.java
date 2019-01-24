@@ -3,6 +3,7 @@ package Raadi.domain.service;
 import Raadi.domain.entity.DocumentCleanEntity;
 import Raadi.domain.event.DocumentRawCreated;
 import Raadi.domain.event.DocumentCleanCreated;
+import Raadi.domain.repository.EventStoreRepository;
 import Raadi.kafkahandler.KConsumer;
 import Raadi.kafkahandler.KProducer;
 import com.google.gson.Gson;
@@ -23,6 +24,11 @@ public class DocumentEventService {
      */
     private final KConsumer consumerDocumentRawCreated = new KConsumer("DOCUMENT_RAW_CREATED");
     private final KProducer producer = new KProducer();
+    private CleanUpService cleanUpService;
+
+    public DocumentEventService(CleanUpService cleanUpService) {
+        this.cleanUpService = cleanUpService;
+    }
 
     /**
      * Subscribe to an event when a DocumentRawEntity has been published.
@@ -32,7 +38,9 @@ public class DocumentEventService {
         System.out.println("SUBSCRIBE DOCUMENT RAW CREATED");
 
         while (true) {
-            ConsumerRecords<String, String> records = this.consumerDocumentRawCreated.getConsumer().poll(Duration.of(1000, ChronoUnit.MILLIS));
+            ConsumerRecords<String, String> records = this.consumerDocumentRawCreated
+                    .getConsumer()
+                    .poll(Duration.of(1000, ChronoUnit.MILLIS));
 
             for (ConsumerRecord<String, String> record : records) {
                 Gson gson = new Gson();
@@ -42,7 +50,7 @@ public class DocumentEventService {
                 // Print
                 System.out.println(documentRawCreated.getDocumentRaw().getURL());
 
-                publishDocumentCleanCreated(CleanUpService.cleanup(documentRawCreated.getDocumentRaw()));
+                this.publishDocumentCleanCreated(cleanUpService.cleanup(documentRawCreated.getDocumentRaw()));
             }
         }
     }
