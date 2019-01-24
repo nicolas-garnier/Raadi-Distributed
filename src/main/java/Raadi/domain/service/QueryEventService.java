@@ -1,30 +1,39 @@
 package Raadi.domain.service;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+import java.lang.reflect.Type;
+import java.time.Duration;
+import java.time.temporal.ChronoUnit;
+import java.util.HashMap;
+import org.apache.kafka.clients.consumer.ConsumerRecord;
+import org.apache.kafka.clients.consumer.ConsumerRecords;
+import org.apache.kafka.clients.producer.ProducerRecord;
 import Raadi.domain.entity.TokenDataEntity;
 import Raadi.domain.event.QueryTokenized;
 import Raadi.kafkahandler.KConsumer;
 import Raadi.kafkahandler.KProducer;
 import Raadi.domain.command.TokenizeQuery;
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
-import org.apache.kafka.clients.consumer.ConsumerRecord;
-import org.apache.kafka.clients.consumer.ConsumerRecords;
-import org.apache.kafka.clients.producer.ProducerRecord;
 
-import java.lang.reflect.Type;
-import java.time.Duration;
-import java.time.temporal.ChronoUnit;
-import java.util.HashMap;
-
-
+/**
+ * Service class for query events management.
+ */
 public class QueryEventService {
 
     /**
      * Attributes.
      */
+    private KConsumer consumerTokenizeQuery;
+    private KProducer producer;
     private TokenizationService tokenizationService;
 
+    /**
+     * Query events service constructor.
+     * @param tokenizationService Tokenization service to inject.
+     */
     public QueryEventService(TokenizationService tokenizationService) {
+        this.consumerTokenizeQuery = new KConsumer("TOKENIZE_QUERY");
+        this.producer = new KProducer();
         this.tokenizationService = tokenizationService;
     }
 
@@ -34,19 +43,18 @@ public class QueryEventService {
     @SuppressWarnings("InfiniteLoopStatement")
     public void subscribeTokenizeQuery() {
 
-        KConsumer consumerTokenizeQuery = new KConsumer("TOKENIZE_QUERY");
         System.out.println("SUBSCRIBE TOKEN QUERY");
         while (true) {
-            ConsumerRecords<String, String> records = consumerTokenizeQuery.getConsumer().poll(Duration.of(100, ChronoUnit.MILLIS));
+            ConsumerRecords<String, String> records = consumerTokenizeQuery
+                    .getConsumer()
+                    .poll(Duration.of(100, ChronoUnit.MILLIS));
 
             for (ConsumerRecord<String, String> record : records) {
                 Gson gson = new Gson();
                 Type type = new TypeToken<TokenizeQuery>(){}.getType();
                 TokenizeQuery tokenizeQuery = gson.fromJson(record.value(), type);
 
-                // Print
                 System.out.println("TOKENIZE QUERY : "+tokenizeQuery.getQuery());
-
                 this.publishQueryTokenized(tokenizationService.tokenization(tokenizeQuery.getQuery()));
             }
         }
@@ -59,7 +67,6 @@ public class QueryEventService {
     @SuppressWarnings({"Duplicates", "unchecked"})
     private void publishQueryTokenized(HashMap<String, TokenDataEntity> vector) {
 
-        KProducer producer = new KProducer();
         QueryTokenized queryTokenized = new QueryTokenized(vector);
         System.out.println("PUBLISH QUERY TOKENIZED");
         String topicName = "QUERY_TOKENIZED";
