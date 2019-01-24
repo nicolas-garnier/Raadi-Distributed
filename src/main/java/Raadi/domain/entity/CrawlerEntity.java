@@ -10,10 +10,16 @@ import java.util.Queue;
  */
 public class CrawlerEntity {
 
+    /**
+     * Attributes.
+     */
     public Queue<CrawlerVO> linksTodo;
     public HashSet<CrawlerVO> linksDone;
     public Integer counter;
 
+    /**
+     * CrawlerService constructor.
+     */
     public CrawlerEntity() {
         this.linksTodo = new LinkedList<>();
         this.linksDone = new HashSet<>();

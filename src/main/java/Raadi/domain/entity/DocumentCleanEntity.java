@@ -13,10 +13,24 @@ public class DocumentCleanEntity {
     private HashSet<String> childrenURL;
     private HashMap<String, TokenDataEntity> vector;
 
+    /**
+     * DocumentCleanEntity constructor.
+     */
+    public DocumentCleanEntity() {
+    }
+
+    /**
+     * Getter for vector.
+     * @return The vector.
+     */
     public HashMap<String, TokenDataEntity> getVector() {
         return vector;
     }
 
+    /**
+     * Setter for vector.
+     * @param vector The vector.
+     */
     public void setVector(HashMap<String, TokenDataEntity> vector) {
         this.vector = vector;
     }
@@ -67,11 +81,5 @@ public class DocumentCleanEntity {
      */
     public void setChildrenURL(HashSet<String> childrenURL) {
         this.childrenURL = childrenURL;
-    }
-
-    /**
-     * DocumentCleanEntity constructor.
-     */
-    public DocumentCleanEntity() {
     }
 }
