@@ -50,7 +50,7 @@ public class DocumentEventService {
      * @param documentClean DocumentCleanEntity to publish.
      */
     @SuppressWarnings({"Duplicates", "unchecked"})
-    public void publishDocumentCleanCreated(DocumentCleanEntity documentClean) {
+    private void publishDocumentCleanCreated(DocumentCleanEntity documentClean) {
 
         Producer producer = new KProducer().getProducer();
         DocumentCleanCreated documentCleanCreated = new DocumentCleanCreated(documentClean);
