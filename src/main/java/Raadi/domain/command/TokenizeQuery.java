@@ -11,6 +11,10 @@ public class TokenizeQuery implements Event
         this.query = query;
     }
 
+    /**
+     * Getter query
+     * @return String
+     */
     public String getQuery() {
         return query;
     }

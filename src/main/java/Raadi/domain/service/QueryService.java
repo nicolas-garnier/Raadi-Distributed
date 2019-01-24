@@ -25,10 +25,6 @@ import java.util.HashMap;
 
 public class QueryService
 {
-    /***
-     *
-     * @param
-     */
     private QueryService()
     {
     }
@@ -44,6 +40,12 @@ public class QueryService
     }
 
 
+    /**
+     * Query service setQuery
+     * @param request
+     * @param response
+     * @return Route
+     */
     public Route setQuery = (Request request, Response response) ->
     {
         String query = request.queryParams("q");
@@ -64,7 +66,7 @@ public class QueryService
 
 
     /**
-     * subscribeQueryTokenized
+     * Query service subscribeQueryTokenized
      */
     private HashMap<String, DocumentCleanEntity> subscribeQueryTokenized()
     {
@@ -89,9 +91,9 @@ public class QueryService
 
 
     /**
-     * processTokenizedQuery
-     * @param vector
-     * @return
+     * Query service processTokenizedQuery
+     * @param vector Hash map token data
+     * @return HashMap document clean
      */
     public HashMap<String, DocumentCleanEntity> processTokenizedQuery(HashMap<String, TokenDataEntity> vector)
     {

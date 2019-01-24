@@ -21,10 +21,18 @@ public class RetroIndexEntity
         private final static RetroIndexEntity instance = new RetroIndexEntity();
     }
 
+    /**
+     * Getter retro Index
+     * @return HashMap DocumentCleanEntities
+     */
     public HashMap<String, ArrayList<DocumentCleanEntity>> getRetroIndex() {
         return retroIndex;
     }
 
+    /**
+     * Setter Retro Index
+     * @param retroIndex
+     */
     public void setRetroIndex(HashMap<String, ArrayList<DocumentCleanEntity>> retroIndex) {
         this.retroIndex = retroIndex;
     }

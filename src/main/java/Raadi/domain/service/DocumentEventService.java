@@ -29,6 +29,8 @@ public class DocumentEventService {
      */
     @SuppressWarnings("InfiniteLoopStatement")
     public void subscribeDocumentRawCreated() {
+        System.out.println("SUBSCRIBE DOCUMENT RAW CREATED");
+
         while (true) {
             ConsumerRecords<String, String> records = this.consumerDocumentRawCreated.getConsumer().poll(Duration.of(1000, ChronoUnit.MILLIS));
 

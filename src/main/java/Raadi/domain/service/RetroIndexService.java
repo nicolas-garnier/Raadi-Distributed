@@ -43,6 +43,9 @@ public class RetroIndexService
         this.subscribeDocumentCleanCreated();
     }
 
+    /**
+     * Retrox index subscribe documentClean created
+     */
     private void subscribeDocumentCleanCreated()
     {
         while (true)
@@ -58,7 +61,10 @@ public class RetroIndexService
         }
     }
 
-
+    /**
+     * Retrox index service
+     * @param documentClean
+     */
     public void fillRetroIndex(DocumentCleanEntity documentClean)
     {
         System.out.println(documentClean.getURL());
