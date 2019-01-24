@@ -4,6 +4,7 @@ import org.apache.kafka.clients.consumer.KafkaConsumer;
 
 import java.util.Arrays;
 import java.util.Properties;
+import java.util.UUID;
 
 public class KConsumer
 {
@@ -18,7 +19,7 @@ public class KConsumer
         Properties props = new Properties();
 
         props.put("bootstrap.servers", "127.0.0.1:"+this.PORT);
-        props.put("group.id", "test-group");
+        props.put("group.id", "test-group-"+UUID.randomUUID().toString());
         props.put("enable.auto.commit", "true");
         props.put("auto.commit.interval.ms", "1000");
         props.put("session.timeout.ms", "30000");

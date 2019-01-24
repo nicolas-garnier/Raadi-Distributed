@@ -131,6 +131,7 @@ public final class CrawlerService {
      */
     public void subscribeCrawlRequest() {
         KConsumer consumerCrawlRequest = new KConsumer("CRAWL_REQUEST");
+        System.out.println("SUBSCRIBE CRAWL REQUEST");
 
         while (true) {
             ConsumerRecords<String, String> records = consumerCrawlRequest.getConsumer().poll(Duration.of(100, ChronoUnit.MILLIS));
