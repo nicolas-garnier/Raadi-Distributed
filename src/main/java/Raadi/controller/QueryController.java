@@ -1,11 +1,11 @@
 package Raadi.controller;
-import Raadi.domain.service.QueryServiceService;
+import Raadi.domain.service.QueryService;
 import Raadi.domain.service.RetroIndexService;
 
 import static spark.Spark.get;
 import static spark.Spark.port;
 
-public class Query
+public class QueryController
 {
     public static void main(String[] args)
     {
@@ -16,6 +16,6 @@ public class Query
         }).start();
 
         port(4568);
-        get("/query", QueryServiceService.getInstance().setQuery);
+        get("/query", QueryService.getInstance().setQuery);
     }
 }

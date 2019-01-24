@@ -4,7 +4,7 @@ import Raadi.domain.service.CrawlerManager;
 
 import static spark.Spark.get;
 
-public class Crawler
+public class CrawlerController
 {
     public static void main(String[] args)
     {

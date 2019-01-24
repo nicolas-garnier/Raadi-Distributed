@@ -23,24 +23,24 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 
-public class QueryServiceService
+public class QueryService
 {
     /***
      *
      * @param
      */
-    private QueryServiceService()
+    private QueryService()
     {
     }
 
-    public static QueryServiceService getInstance()
+    public static QueryService getInstance()
     {
-        return QueryServiceService.InstanceHolder.instance;
+        return QueryService.InstanceHolder.instance;
     }
 
     private static class InstanceHolder
     {
-        private final static QueryServiceService instance = new QueryServiceService();
+        private final static QueryService instance = new QueryService();
     }
 
 

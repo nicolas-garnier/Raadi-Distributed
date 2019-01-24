@@ -25,7 +25,7 @@ public class QueryEventService {
 
 
      /**
-     * Subscribe to an event when a Query (string) has been published.
+     * Subscribe to an event when a QueryController (string) has been published.
      */
     @SuppressWarnings("InfiniteLoopStatement")
     public void subscribeTokenizeQuery() {
@@ -49,7 +49,7 @@ public class QueryEventService {
     }
 
     /**
-     * Publish an event to Kafka when a Query (vector) has been tokenized.
+     * Publish an event to Kafka when a QueryController (vector) has been tokenized.
      * @param vector Vector to publish.
      */
     @SuppressWarnings({"Duplicates", "unchecked"})
@@ -57,7 +57,7 @@ public class QueryEventService {
 
         KProducer producer = new KProducer();
         QueryTokenized queryTokenized = new QueryTokenized(vector);
-
+        System.out.println("PUBLISH QUERY TOKENIZED");
         String topicName = "QUERY_TOKENIZED";
         Gson gson = new Gson();
         Type type = new TypeToken<QueryTokenized>() {}.getType();
