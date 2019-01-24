@@ -151,6 +151,8 @@ public class RetroIndexService
                 }
             }
         }
+
+        System.out.println("RESPONSE QUERY");
         System.out.println(responseDocuments);
         return responseDocuments;
     }

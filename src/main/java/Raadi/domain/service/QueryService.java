@@ -50,9 +50,10 @@ public class QueryService
         producer.getProducer().send(new ProducerRecord<>("TOKENIZE_QUERY", json));
         producer.getProducer().close();
         System.out.println("QUERY : "+query);
-        this.subscribeQueryTokenized();
 
-        return "finish";
+        HashMap<String, DocumentCleanEntity> hashMap = this.subscribeQueryTokenized();
+
+        return hashMap;
     };
 
 
@@ -112,7 +113,7 @@ public class QueryService
                 Type type = new TypeToken<QueryResponse>(){}.getType();
                 QueryResponse queryResponse = gson.fromJson(record.value(), type);
                 System.out.println("QUERY RESPONSE");
-
+                System.out.println(queryResponse.getResponses());
                 return queryResponse.getResponses();
             }
         }
