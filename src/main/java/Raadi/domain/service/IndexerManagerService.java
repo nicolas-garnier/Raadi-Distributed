@@ -1,7 +1,5 @@
 package Raadi.domain.service;
 
-import Raadi.util.Converter;
-
 import java.util.HashMap;
 import java.util.HashSet;
 
@@ -17,8 +15,8 @@ public class IndexerManagerService
      * Indexer manager service constructor.
      */
     public IndexerManagerService() {
-        this.stopWords = Converter.StopWordsJsonToHashSet();
-        this.synonyms = Converter.SynonymsCSVToHashMap();
+        this.stopWords = ConverterService.StopWordsJsonToHashSet();
+        this.synonyms = ConverterService.SynonymsCSVToHashMap();
     }
 
     /**

@@ -1,4 +1,4 @@
-package Raadi.util;
+package Raadi.domain.service;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
@@ -8,12 +8,12 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class Converter {
+public class ConverterService {
 
     public static HashSet<String> StopWordsJsonToHashSet() {
 
         try {
-            byte[] encoded = Files.readAllBytes(Paths.get(System.getProperty("user.dir") + "/src/main/java/Raadi/util/StopWords.json"));
+            byte[] encoded = Files.readAllBytes(Paths.get(System.getProperty("user.dir") + "/src/main/java/Raadi/domain/valueObjects/StopWords.json"));
             String stopWordsString = new String(encoded, Charset.defaultCharset());
             stopWordsString = stopWordsString.substring(1, stopWordsString.length() - 1);
 
@@ -32,7 +32,7 @@ public class Converter {
 
         HashMap<String, String> synonymsHashMap = new HashMap<>();
 
-        String fileName = System.getProperty("user.dir") + "/src/main/java/Raadi/util/Synonyms.csv";
+        String fileName = System.getProperty("user.dir") + "/src/main/java/Raadi/domain/valueObjects/Synonyms.csv";
         List<String> list = new ArrayList<>();
 
         try (Stream<String> stream = Files.lines(Paths.get(fileName))) {
