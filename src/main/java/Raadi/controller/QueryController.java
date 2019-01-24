@@ -5,10 +5,11 @@ import Raadi.framework.RaadiFW;
 import static spark.Spark.get;
 import static spark.Spark.port;
 
-public class QueryController
-{
-    public static void main(String[] args)
-    {
+public class QueryController {
+
+    @SuppressWarnings("unchecked")
+    public static void main(String[] args) {
+
         RaadiFW raadiFW = new RaadiFW();
 
         raadiFW.bean(QueryService.class, new QueryService());

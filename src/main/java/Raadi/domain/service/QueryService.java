@@ -78,7 +78,6 @@ public class QueryService
                 System.out.println("QUERY TOKENIZED");
                 this.sendTokenizedQuery(queryTokenized.getVector());
                 return this.subscribeQueryResponse();
-
             }
         }
     }
