@@ -1,6 +1,5 @@
 package Raadi.domain.entity;
 
-import Raadi.domain.event.Event;
 import javafx.util.Pair;
 
 import java.lang.reflect.Type;

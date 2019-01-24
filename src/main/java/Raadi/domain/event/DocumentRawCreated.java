@@ -2,8 +2,7 @@ package Raadi.domain.event;
 
 import Raadi.domain.entity.DocumentRawEntity;
 
-public class DocumentRawCreated implements Event
-{
+public class DocumentRawCreated extends Event {
 
     private DocumentRawEntity documentRaw;
 
@@ -15,7 +14,9 @@ public class DocumentRawCreated implements Event
         this.documentRaw = documentRaw;
     }
 
-    public DocumentRawCreated(DocumentRawEntity documentRaw) {
+    public DocumentRawCreated(DocumentRawEntity documentRaw)
+    {
+        super();
         this.documentRaw = documentRaw;
     }
 }

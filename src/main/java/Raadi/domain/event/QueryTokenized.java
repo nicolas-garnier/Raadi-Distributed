@@ -3,7 +3,7 @@ package Raadi.domain.event;
 import java.util.HashMap;
 import Raadi.domain.entity.TokenDataEntity;
 
-public class QueryTokenized implements Event
+public class QueryTokenized extends Event
 {
 
     private HashMap<String, TokenDataEntity> vector;
@@ -16,7 +16,9 @@ public class QueryTokenized implements Event
         this.vector = vector;
     }
 
-    public QueryTokenized(HashMap<String, TokenDataEntity> vector) {
+    public QueryTokenized(HashMap<String, TokenDataEntity> vector)
+    {
+        super();
         this.vector = vector;
     }
 }
