@@ -8,11 +8,18 @@ public class Indexer
 {
     public static void main( String[] args )
     {
-        DocumentEventService documentEvent = new DocumentEventService();
-        documentEvent.subscribeDocumentRawCreated();
+        new Thread(() ->
+        {
+            DocumentEventService documentEvent = new DocumentEventService();
+            documentEvent.subscribeDocumentRawCreated();
+            return;
+        }).start();
 
-        // TODO : Async call
-        QueryEventService queryEvent = new QueryEventService();
-        queryEvent.subscribeTokenizeQuery();
+        new Thread(() ->
+        {
+            QueryEventService queryEvent = new QueryEventService();
+            queryEvent.subscribeTokenizeQuery();
+        }).start();
+
     }
 }
