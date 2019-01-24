@@ -5,8 +5,15 @@ import Raadi.framework.RaadiFW;
 import static spark.Spark.get;
 import static spark.Spark.port;
 
+/**
+ * Entry point for REST interface.
+ */
 public class QueryController {
 
+    /**
+     * REST interface controller main function.
+     * @param args Arguments for main function.
+     */
     @SuppressWarnings("unchecked")
     public static void main(String[] args) {
 
