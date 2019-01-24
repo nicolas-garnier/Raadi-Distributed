@@ -19,6 +19,7 @@ public class Indexer
         {
             QueryEventService queryEvent = new QueryEventService();
             queryEvent.subscribeTokenizeQuery();
+            return;
         }).start();
 
     }
