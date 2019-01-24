@@ -3,6 +3,7 @@ package Raadi.domain.service;
 import Raadi.domain.entity.DocumentCleanEntity;
 import Raadi.domain.event.DocumentRawCreated;
 import Raadi.domain.event.DocumentCleanCreated;
+import Raadi.domain.repository.EventStoreRepository;
 import Raadi.kafkahandler.KConsumer;
 import Raadi.kafkahandler.KProducer;
 import com.google.gson.Gson;
@@ -24,6 +25,12 @@ public class DocumentEventService {
     private final KConsumer consumerDocumentRawCreated = new KConsumer("DOCUMENT_RAW_CREATED");
     private final KProducer producer = new KProducer();
 
+    private EventStoreRepository eventStoreRepository;
+
+    public DocumentEventService(EventStoreRepository eventStoreRepository) {
+        this.eventStoreRepository = eventStoreRepository;
+    }
+
     /**
      * Subscribe to an event when a DocumentRawEntity has been published.
      */
@@ -32,17 +39,22 @@ public class DocumentEventService {
         System.out.println("SUBSCRIBE DOCUMENT RAW CREATED");
 
         while (true) {
-            ConsumerRecords<String, String> records = this.consumerDocumentRawCreated.getConsumer().poll(Duration.of(1000, ChronoUnit.MILLIS));
+            ConsumerRecords<String, String> records = this.consumerDocumentRawCreated
+                    .getConsumer()
+                    .poll(Duration.of(1000, ChronoUnit.MILLIS));
 
             for (ConsumerRecord<String, String> record : records) {
                 Gson gson = new Gson();
                 Type type = new TypeToken<DocumentRawCreated>(){}.getType();
                 DocumentRawCreated documentRawCreated = gson.fromJson(record.value(), type);
 
+                // EventStore
+                eventStoreRepository.insert(record.value(), type);
+
                 // Print
                 System.out.println(documentRawCreated.getDocumentRaw().getURL());
 
-                publishDocumentCleanCreated(CleanUpService.cleanup(documentRawCreated.getDocumentRaw()));
+                this.publishDocumentCleanCreated(CleanUpService.cleanup(documentRawCreated.getDocumentRaw()));
             }
         }
     }
@@ -61,6 +73,7 @@ public class DocumentEventService {
         Gson gson = new Gson();
         Type type = new TypeToken<DocumentCleanCreated>() {}.getType();
         String json = gson.toJson(documentCleanCreated, type);
+        eventStoreRepository.insert(json, type);
         producer.send(new ProducerRecord<>(topicName, json));
         producer.close();
     }
