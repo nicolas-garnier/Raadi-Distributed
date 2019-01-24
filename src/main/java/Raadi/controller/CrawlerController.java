@@ -10,7 +10,7 @@ public class CrawlerController
     {
         get("/crawler", (request, response) ->
         {
-            CrawlerManager.getInstance().start(request.queryParams("url"), Integer.parseInt(request.queryParams("size")));
+            //CrawlerManager.getInstance().start(request.queryParams("url"), Integer.parseInt(request.queryParams("size")));
             return "CrawlerService done !";
         });
     }

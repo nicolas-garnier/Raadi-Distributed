@@ -1,26 +1,35 @@
 package Raadi.domain.service;
 
 import Raadi.domain.entity.CrawlerEntity;
+import Raadi.domain.command.CrawlResquest;
+import Raadi.domain.event.CrawlerCreated;
 import Raadi.domain.event.DocumentRawCreated;
 import Raadi.domain.valueObjects.CrawlerVO;
 import Raadi.domain.entity.DocumentRawEntity;
+import Raadi.kafkahandler.KConsumer;
 import Raadi.kafkahandler.KProducer;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import org.apache.kafka.clients.consumer.ConsumerRecord;
+import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.producer.ProducerRecord;
 
 import java.lang.reflect.Type;
+import java.time.Duration;
+import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 
 public class CrawlerManager {
-    private CrawlerEntity crawlerEntity;
 
-    private CrawlerManager()
-    {
+    private CrawlerEntity crawlerEntity;
+    private ArrayList<String> idAvailableCrawlerService;
+
+    public CrawlerManager() {
         this.crawlerEntity = new CrawlerEntity();
+        this.idAvailableCrawlerService = new ArrayList<>();
     }
 
-    public static CrawlerManager getInstance()
-    {
+    public static CrawlerManager getInstance() {
         return CrawlerManager.InstanceHolder.instance;
     }
 
@@ -29,54 +38,94 @@ public class CrawlerManager {
     }
 
     /**
-     * Start the crawling on the url in parameter
-     * @param firstURL the url to start
-     * @param max_size Number of page wanted to visited
+     * Receive "CRAWLER_CREATED" event
      */
-    public void start(String firstURL, int max_size) {
-        CrawlerVO crawlerVO = new CrawlerVO(firstURL);
-        this.crawlerEntity.linksTodo.add(crawlerVO);
-        int counter = 0;
+    public void subscribeCrawlerCreated() {
+        KConsumer consumerCrawlerCreated = new KConsumer("CRAWLER_CREATED");
+        System.out.println("SUBSCRIBE CRAWLER CREATED");
 
-        while (counter <= max_size && !this.crawlerEntity.linksTodo.isEmpty()) {
-            CrawlerVO url = this.crawlerEntity.linksTodo.poll();
+        while (true) {
+            ConsumerRecords<String, String> records = consumerCrawlerCreated.getConsumer()
+                    .poll(Duration.of(100, ChronoUnit.MILLIS));
 
-            if (!this.crawlerEntity.linksDone.contains(url)) {
-                DocumentRawEntity dr = CrawlerService.crawl(url);
-                if (dr != null) {
-                    this.crawlerEntity.linksDone.add(url);
-                    counter++;
+            for (ConsumerRecord<String, String> record : records) {
 
-                    for(String childURL : dr.getChildrenURL()) {
+                Gson gson = new Gson();
+                Type type = new TypeToken<CrawlerCreated>(){}.getType();
+                CrawlerCreated crawlerCreated = gson.fromJson(record.value(), type);
+
+                System.out.println("CRAWLER CREATED : " + crawlerCreated.getIdCrawlerService());
+
+                idAvailableCrawlerService.add(crawlerCreated.getIdCrawlerService());
+
+                CrawlerVO crawlerVO = new CrawlerVO(crawlerCreated.getURL());
+                this.crawlerEntity.linksDone.add(crawlerVO);
+                sendCrawlRequest(crawlerCreated.getIdCrawlerService(), crawlerVO);
+            }
+        }
+    }
+
+
+    /**
+     * Receive "DOCUMENT_RAW_CREATED"
+     *      => save children URLs on todolist
+     *      => request crawl "CRAWL_REQUEST"
+     */
+    public void subscribeDocumentRawCreated() {
+        KConsumer consumerDocumentRawCreated = new KConsumer("DOCUMENT_RAW_CREATED");
+        System.out.println("SUBSCRIBE DOCUMENT RAW CREATED");
+
+        while (true) {
+            ConsumerRecords<String, String> records = consumerDocumentRawCreated.getConsumer()
+                    .poll(Duration.of(100, ChronoUnit.MILLIS));
+
+            for (ConsumerRecord<String, String> record : records) {
+
+                Gson gson = new Gson();
+                Type type = new TypeToken<DocumentRawCreated>() {
+                }.getType();
+                DocumentRawCreated documentRawCreated = gson.fromJson(record.value(), type);
+
+                DocumentRawEntity documentRaw = documentRawCreated.getDocumentRaw();
+                System.out.println("DOCUMENT RAW CREATED : " + documentRaw.getURL());
+
+                if (this.crawlerEntity.counter < 10) {
+                    for (String childURL : documentRaw.getChildrenURL()) {
                         this.crawlerEntity.linksTodo.add(new CrawlerVO(childURL));
                     }
-                    this.send(dr);
+
+                    CrawlerVO URL = this.crawlerEntity.linksTodo.poll();
+                    while (this.crawlerEntity.linksDone.contains(URL)) {
+                        URL = this.crawlerEntity.linksTodo.poll();
+                    }
+                    sendCrawlRequest(documentRawCreated.getIdCrawlerService(), URL);
+                    this.crawlerEntity.counter++;
+                } else {
+                    System.out.println("DONE WITH CRAWL REQUEST");
                 }
             }
         }
-
-        this.crawlerEntity.linksTodo.clear();
     }
 
     /**
-     * Notifie application via Kafka
-     * @param documentRaw Document want to send
+     * Notifie application via Kafka Crawler created
+     * @param idCrawler target crawler
+     * @param URL URL to crawl
      */
-    public void send(DocumentRawEntity documentRaw)
-    {
-        System.out.println(documentRaw.getURL());
-        //System.out.println(documentRaw.getChildrenURL());
+    private void sendCrawlRequest(String idCrawler, CrawlerVO URL) {
+        CrawlResquest crawlResquest = new CrawlResquest(idCrawler, URL);
+        String topicName = "CRAWL_REQUEST";
 
-        DocumentRawCreated documentRawCreated = new DocumentRawCreated(documentRaw);
-        String topicName = "DOCUMENT_RAW_CREATED";
         Gson gson = new Gson();
-        Type type = new TypeToken<DocumentRawCreated>(){}.getType();
-        String json = gson.toJson(documentRawCreated, type);
+        Type type = new TypeToken<CrawlResquest>(){}.getType();
+        String json = gson.toJson(crawlResquest, type);
 
         KProducer producer = new KProducer();
         producer.getProducer().send(new ProducerRecord<>(topicName, json));
         producer.getProducer().close();
 
-        System.out.println("CrawlerService's message sent successfully");
+        System.out.println("CrawlRequest from CrawlerManager's message sent successfully");
+
     }
+
 }
