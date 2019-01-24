@@ -1,9 +1,6 @@
 package Raadi.application;
 
-import Raadi.domain.service.CleanUpService;
-import Raadi.domain.service.DocumentEventService;
-import Raadi.domain.service.QueryEventService;
-import Raadi.domain.service.TokenizationService;
+import Raadi.domain.service.*;
 import Raadi.framework.RaadiFW;
 
 
@@ -14,7 +11,10 @@ public class Indexer {
     {
         final RaadiFW raadi = new RaadiFW();
 
-        raadi.bean(TokenizationService.class, new TokenizationService());
+        raadi.bean(IndexerManagerService.class, new IndexerManagerService());
+        IndexerManagerService indexerManagerService = (IndexerManagerService) raadi.instanceOf(IndexerManagerService.class);
+
+        raadi.bean(TokenizationService.class, new TokenizationService(indexerManagerService));
         TokenizationService tokenizationService = (TokenizationService) raadi.instanceOf(TokenizationService.class);
 
         raadi.bean(CleanUpService.class, new CleanUpService(tokenizationService));

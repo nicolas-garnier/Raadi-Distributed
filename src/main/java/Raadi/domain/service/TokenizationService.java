@@ -9,6 +9,18 @@ import java.util.regex.Pattern;
 public class TokenizationService {
 
     /**
+     * Attributes.
+     */
+    private IndexerManagerService indexerManagerService;
+
+    /**
+     * Tokenization service Constructor
+     */
+    public TokenizationService(IndexerManagerService indexerManagerService) {
+        this.indexerManagerService = indexerManagerService;
+    }
+
+    /**
      * Tokenize a string to return an HashMap of String and TokenDataEntity.
      * @param text String text to tokenize.
      * @return HashMap of String and TokenDataEntity.
@@ -68,7 +80,7 @@ public class TokenizationService {
      */
     private Boolean isStopWord(String word)
     {
-        return IndexerManagerService.getInstance().getStopWords().contains(word);
+        return indexerManagerService.getStopWords().contains(word);
     }
 
     /**
@@ -94,6 +106,6 @@ public class TokenizationService {
      * @return String transformed as synonym.
      */
     private String synonymTransform(String word) {
-        return IndexerManagerService.getInstance().getSynonyms().getOrDefault(word, word);
+        return indexerManagerService.getSynonyms().getOrDefault(word, word);
     }
 }

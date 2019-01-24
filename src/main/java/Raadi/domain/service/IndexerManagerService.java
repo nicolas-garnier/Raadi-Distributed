@@ -7,20 +7,19 @@ import java.util.HashSet;
 
 public class IndexerManagerService
 {
+    /**
+     * Attributes.
+     */
     private HashSet<String> stopWords;
     private HashMap<String, String> synonyms;
 
-    private IndexerManagerService()
-    {
+    /**
+     * Indexer manager service constructor.
+     */
+    public IndexerManagerService() {
         this.stopWords = Converter.StopWordsJsonToHashSet();
         this.synonyms = Converter.SynonymsCSVToHashMap();
     }
-
-    private static class holder {
-        private final static IndexerManagerService instance = new IndexerManagerService();
-    }
-
-    public static IndexerManagerService getInstance() {return holder.instance;}
 
     /**
      * IndexerManagerService stop words getter.
