@@ -8,9 +8,16 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class ConverterService {
+/**
+ * Converter business logic class.
+ */
+class ConverterService {
 
-    public static HashSet<String> StopWordsJsonToHashSet() {
+    /**
+     * Convert stop words in JSON file to a HashSet data structure.
+     * @return An HashSet with the stop words.
+     */
+    static HashSet<String> StopWordsJsonToHashSet() {
 
         try {
             byte[] encoded = Files.readAllBytes(Paths.get(System.getProperty("user.dir") + "/src/main/java/Raadi/domain/valueObjects/StopWords.json"));
@@ -28,7 +35,11 @@ public class ConverterService {
         return null;
     }
 
-    public static HashMap<String, String> SynonymsCSVToHashMap() {
+    /**
+     * Convert synonyms in CSV file to a HashMap data structure.
+     * @return An HashMap with the synonyms.
+     */
+    static HashMap<String, String> SynonymsCSVToHashMap() {
 
         HashMap<String, String> synonymsHashMap = new HashMap<>();
 
@@ -38,7 +49,8 @@ public class ConverterService {
         try (Stream<String> stream = Files.lines(Paths.get(fileName))) {
             list = stream.collect(Collectors.toList());
 
-        } catch (IOException e) {
+        }
+        catch (IOException e) {
             e.printStackTrace();
         }
 
@@ -47,7 +59,6 @@ public class ConverterService {
             for (int i = 1; i < items.length; i++)
                 synonymsHashMap.put(items[i], items[0]);
         }
-        
         return synonymsHashMap;
     }
 }
