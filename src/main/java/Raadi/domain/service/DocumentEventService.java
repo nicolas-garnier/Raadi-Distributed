@@ -24,11 +24,10 @@ public class DocumentEventService {
      */
     private final KConsumer consumerDocumentRawCreated = new KConsumer("DOCUMENT_RAW_CREATED");
     private final KProducer producer = new KProducer();
+    private CleanUpService cleanUpService;
 
-    private EventStoreRepository eventStoreRepository;
-
-    public DocumentEventService(EventStoreRepository eventStoreRepository) {
-        this.eventStoreRepository = eventStoreRepository;
+    public DocumentEventService(CleanUpService cleanUpService) {
+        this.cleanUpService = cleanUpService;
     }
 
     /**
@@ -48,13 +47,10 @@ public class DocumentEventService {
                 Type type = new TypeToken<DocumentRawCreated>(){}.getType();
                 DocumentRawCreated documentRawCreated = gson.fromJson(record.value(), type);
 
-                // EventStore
-                eventStoreRepository.insert(record.value(), type);
-
                 // Print
                 System.out.println(documentRawCreated.getDocumentRaw().getURL());
 
-                this.publishDocumentCleanCreated(CleanUpService.cleanup(documentRawCreated.getDocumentRaw()));
+                this.publishDocumentCleanCreated(cleanUpService.cleanup(documentRawCreated.getDocumentRaw()));
             }
         }
     }
@@ -73,7 +69,6 @@ public class DocumentEventService {
         Gson gson = new Gson();
         Type type = new TypeToken<DocumentCleanCreated>() {}.getType();
         String json = gson.toJson(documentCleanCreated, type);
-        eventStoreRepository.insert(json, type);
         producer.send(new ProducerRecord<>(topicName, json));
         producer.close();
     }

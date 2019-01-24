@@ -22,7 +22,11 @@ public class QueryEventService {
     /**
      * Attributes.
      */
+    private TokenizationService tokenizationService;
 
+    public QueryEventService(TokenizationService tokenizationService) {
+        this.tokenizationService = tokenizationService;
+    }
 
      /**
      * Subscribe to an event when a QueryController (string) has been published.
@@ -43,7 +47,7 @@ public class QueryEventService {
                 // Print
                 System.out.println("TOKENIZE QUERY : "+tokenizeQuery.getQuery());
 
-                this.publishQueryTokenized(TokenizationService.tokenization(tokenizeQuery.getQuery()));
+                this.publishQueryTokenized(tokenizationService.tokenization(tokenizeQuery.getQuery()));
             }
         }
     }

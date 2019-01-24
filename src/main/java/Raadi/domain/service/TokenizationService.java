@@ -13,7 +13,7 @@ public class TokenizationService {
      * @param text String text to tokenize.
      * @return HashMap of String and TokenDataEntity.
      */
-    public static HashMap<String, TokenDataEntity> tokenization(String text)
+    HashMap<String, TokenDataEntity> tokenization(String text)
     {
         HashMap<String, TokenDataEntity> vector = new HashMap<>();
         String[] arrWords = text.split(" ");
@@ -66,7 +66,7 @@ public class TokenizationService {
      * @param word String word to check.
      * @return True if it is a stop word, else false.
      */
-    private static Boolean isStopWord(String word)
+    private Boolean isStopWord(String word)
     {
         return IndexerManagerService.getInstance().getStopWords().contains(word);
     }
@@ -76,7 +76,7 @@ public class TokenizationService {
      * @param word String to transform.
      * @return String transformed as stemming algorithm.
      */
-    private static String stemmingTransform(String word)
+    private String stemmingTransform(String word)
     {
         if (Pattern.matches(".+sses", word) || Pattern.matches(".+ies", word))
             return word.substring(0, word.length()-2);
@@ -93,7 +93,7 @@ public class TokenizationService {
      * @param word String to transform.
      * @return String transformed as synonym.
      */
-    private static String synonymTransform(String word) {
+    private String synonymTransform(String word) {
         return IndexerManagerService.getInstance().getSynonyms().getOrDefault(word, word);
     }
 }

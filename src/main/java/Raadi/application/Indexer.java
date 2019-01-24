@@ -1,32 +1,33 @@
 package Raadi.application;
 
-import Raadi.domain.entity.EventStoreEntity;
-import Raadi.domain.repository.EventStoreRepository;
+import Raadi.domain.service.CleanUpService;
 import Raadi.domain.service.DocumentEventService;
 import Raadi.domain.service.QueryEventService;
+import Raadi.domain.service.TokenizationService;
+import Raadi.framework.RaadiFW;
 
 
-public class Indexer
-{
-    @SuppressWarnings("UnnecessaryReturnStatement")
+public class Indexer {
+
+    @SuppressWarnings("unchecked")
     public static void main(String[] args )
     {
-        EventStoreEntity eventStoreEntity = new EventStoreEntity();
-        EventStoreRepository eventStoreRepository = new EventStoreRepository(eventStoreEntity);
+        final RaadiFW raadi = new RaadiFW();
 
-        new Thread(() ->
-        {
-            DocumentEventService documentEvent = new DocumentEventService(eventStoreRepository);
-            documentEvent.subscribeDocumentRawCreated();
-            return;
-        }).start();
+        raadi.bean(TokenizationService.class, new TokenizationService());
+        TokenizationService tokenizationService = (TokenizationService) raadi.instanceOf(TokenizationService.class);
 
-        new Thread(() ->
-        {
-            QueryEventService queryEvent = new QueryEventService();
-            queryEvent.subscribeTokenizeQuery();
-            return;
-        }).start();
+        raadi.bean(CleanUpService.class, new CleanUpService(tokenizationService));
+        CleanUpService cleanUpService = (CleanUpService) raadi.instanceOf(CleanUpService.class);
 
+
+        raadi.bean(DocumentEventService.class, new DocumentEventService(cleanUpService));
+        DocumentEventService documentEvent = (DocumentEventService) raadi.instanceOf(DocumentEventService.class);
+
+        raadi.bean(QueryEventService.class, new QueryEventService(tokenizationService));
+        QueryEventService queryEvent = (QueryEventService) raadi.instanceOf(QueryEventService.class);
+
+        new Thread(documentEvent::subscribeDocumentRawCreated).start();
+        new Thread(queryEvent::subscribeTokenizeQuery).start();
     }
 }
