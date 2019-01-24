@@ -1,14 +1,19 @@
 package Raadi.domain.service;
 
 
+import Raadi.domain.command.ProcessQuery;
 import Raadi.domain.entity.DocumentCleanEntity;
+import Raadi.domain.entity.TokenDataEntity;
 import Raadi.domain.event.DocumentCleanCreated;
+import Raadi.domain.event.QueryResponse;
 import Raadi.kafkahandler.KConsumer;
 import Raadi.domain.entity.RetroIndexEntity;
+import Raadi.kafkahandler.KProducer;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
+import org.apache.kafka.clients.producer.ProducerRecord;
 
 import java.lang.reflect.Type;
 import java.time.Duration;
@@ -19,10 +24,12 @@ import java.util.HashMap;
 public class RetroIndexService
 {
     private KConsumer consumerDocumentCleanCreated;
+    private KConsumer consumerProcessQuery;
 
     private RetroIndexService()
     {
         consumerDocumentCleanCreated = new KConsumer("DOCUMENT_CLEAN_CREATED");
+        consumerProcessQuery = new KConsumer("PROCESS_QUERY");
     }
 
 
@@ -41,6 +48,7 @@ public class RetroIndexService
     public void start()
     {
         this.subscribeDocumentCleanCreated();
+        this.subscribeProcessQuery();
     }
 
     /**
@@ -59,6 +67,36 @@ public class RetroIndexService
                 this.fillRetroIndex(documentCleanCreated.getDocumentClean());
             }
         }
+    }
+
+    private void subscribeProcessQuery()
+    {
+        while (true)
+        {
+            ConsumerRecords<String, String> records = this.consumerProcessQuery.getConsumer().poll(Duration.of(1000, ChronoUnit.MILLIS));
+            for (ConsumerRecord<String, String> record : records)
+            {
+                Gson gson = new Gson();
+                Type type = new TypeToken<ProcessQuery>(){}.getType();
+                ProcessQuery processQuery = gson.fromJson(record.value(), type);
+                this.sendQueryResponse(processQuery.getVector());
+            }
+        }
+    }
+
+    private void sendQueryResponse(HashMap<String, TokenDataEntity> vector)
+    {
+        HashMap<String, DocumentCleanEntity> hashMap = this.processQuery(vector);
+
+        KProducer producer = new KProducer();
+        QueryResponse queryResponse = new QueryResponse(hashMap);
+        Gson gson = new Gson();
+        Type type = new TypeToken<QueryResponse>() {}.getType();
+        String json = gson.toJson(queryResponse, type);
+
+        // Step 3
+        producer.getProducer().send(new ProducerRecord<>("QUERY_RESPONSE", json));
+        producer.getProducer().close();
     }
 
     /**
@@ -85,5 +123,32 @@ public class RetroIndexService
 
             RetroIndexEntity.getInstance().setRetroIndex(retroIndex);
         }
+    }
+
+    public HashMap<String, DocumentCleanEntity> processQuery(HashMap<String, TokenDataEntity> vector)
+    {
+
+        HashMap<String, DocumentCleanEntity> responseDocuments = new HashMap<>();
+
+
+        HashMap<String, ArrayList<DocumentCleanEntity>> retroIndex = RetroIndexEntity.getInstance().getRetroIndex();
+
+
+        if (vector == null)
+            return responseDocuments;
+
+        for(String queryToken : vector.keySet())
+        {
+            if (retroIndex.containsKey(queryToken))
+            {
+                for (DocumentCleanEntity documentClean : retroIndex.get(queryToken))
+                {
+                    responseDocuments.put(documentClean.getURL(), documentClean);
+                }
+            }
+        }
+
+        System.out.println(responseDocuments);
+        return responseDocuments;
     }
 }
