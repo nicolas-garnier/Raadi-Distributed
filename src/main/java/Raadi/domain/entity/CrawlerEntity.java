@@ -10,21 +10,13 @@ import java.util.Queue;
  */
 public class CrawlerEntity {
 
-    /**
-     * List of urls to visit.
-     */
     public Queue<CrawlerVO> linksTodo;
-
-    /**
-     * Set of url already visited.
-     */
     public HashSet<CrawlerVO> linksDone;
+    public Integer counter;
 
-    /**
-     * CrawlerService entity constructor.
-     */
     public CrawlerEntity() {
         this.linksTodo = new LinkedList<>();
         this.linksDone = new HashSet<>();
+        this.counter = 0;
     }
 }

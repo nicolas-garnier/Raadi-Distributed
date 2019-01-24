@@ -1,23 +1,67 @@
 package Raadi.domain.service;
 
+import Raadi.domain.command.CrawlResquest;
+import Raadi.domain.event.CrawlerCreated;
+import Raadi.domain.event.DocumentRawCreated;
 import Raadi.domain.valueObjects.CrawlerVO;
 import Raadi.domain.entity.DocumentRawEntity;
+import Raadi.kafkahandler.KConsumer;
+import Raadi.kafkahandler.KProducer;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+import org.apache.kafka.clients.consumer.ConsumerRecord;
+import org.apache.kafka.clients.consumer.ConsumerRecords;
+import org.apache.kafka.clients.producer.ProducerRecord;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+import java.lang.reflect.Type;
+import java.time.Duration;
+import java.time.temporal.ChronoUnit;
 import java.util.HashSet;
+import java.util.UUID;
 
-public final class CrawlerService
-{
+public final class CrawlerService {
+    private String id;
+    private String URL;
+
+    public CrawlerService(String initialURL) {
+        this.id = UUID.randomUUID().toString();
+        this.URL = initialURL;
+        sendCrawlerCreated();
+    }
+
+    /**
+     * Getter id
+     * @return String
+     */
+    public String getId() {
+        return id;
+    }
+
+    /**
+     * Getter URL
+     * @return String
+     */
+    public String getURL() {
+        return URL;
+    }
+
+    /**
+     * Setter URL
+     * @param URL
+     */
+    public void setURL(String URL) {
+        this.URL = URL;
+    }
+
     /**
      * The crawl function
      * @param crawlerVO Value Object with url in the content
-     * @return DocumentRawEntity : page informations
      */
-    public static DocumentRawEntity crawl(CrawlerVO crawlerVO)
-    {
+    private void crawl(CrawlerVO crawlerVO) {
         DocumentRawEntity documentRaw = new DocumentRawEntity();
 
         try {
@@ -41,9 +85,71 @@ public final class CrawlerService
 
         } catch (Exception ex) {
             System.err.println(ex);
-            return null;
         }
+        sendDocumentRawCreated(documentRaw);
+    }
 
-        return documentRaw;
-    };
+    /**
+     * Notifie application via Kafka Crawler created
+     */
+    private void sendCrawlerCreated() {
+        System.out.println("CRAWLER " + this.id + " CREATED");
+        CrawlerCreated crawlerCreated = new CrawlerCreated(this.id, this.URL);
+
+        String topicName = "CRAWLER_CREATED";
+        Gson gson = new Gson();
+        Type type = new TypeToken<CrawlerCreated>(){}.getType();
+        String json = gson.toJson(crawlerCreated, type);
+
+        KProducer producer = new KProducer();
+        producer.getProducer().send(new ProducerRecord<>(topicName, json));
+        producer.getProducer().close();
+    }
+
+    /**
+     * Notifie application via Kafka DocumentRaw created
+     * @param documentRaw Document want to send
+     */
+    private void sendDocumentRawCreated(DocumentRawEntity documentRaw) {
+        System.out.println(documentRaw.getURL());
+
+        DocumentRawCreated documentRawCreated = new DocumentRawCreated(this.id, documentRaw);
+        String topicName = "DOCUMENT_RAW_CREATED";
+        Gson gson = new Gson();
+        Type type = new TypeToken<DocumentRawCreated>(){}.getType();
+        String json = gson.toJson(documentRawCreated, type);
+
+        KProducer producer = new KProducer();
+        producer.getProducer().send(new ProducerRecord<>(topicName, json));
+        producer.getProducer().close();
+
+        System.out.println("CrawlerService's message sent successfully");
+    }
+
+    /**
+     * Receive "CRAWL_REQUEST" event => init crawl on url
+     */
+    public void subscribeCrawlRequest() {
+        KConsumer consumerCrawlRequest = new KConsumer("CRAWL_REQUEST");
+
+        while (true) {
+            ConsumerRecords<String, String> records = consumerCrawlRequest.getConsumer().poll(Duration.of(100, ChronoUnit.MILLIS));
+
+            for (ConsumerRecord<String, String> record : records) {
+
+                Gson gson = new Gson();
+                Type type = new TypeToken<CrawlResquest>(){}.getType();
+                CrawlResquest crawlResquest = gson.fromJson(record.value(), type);
+
+                String id = crawlResquest.getId();
+                if (this.id.equals(id)) {
+                    CrawlerVO crawlerVO = crawlResquest.getURL();
+                    System.out.println("CRAWL REQUEST : " + crawlerVO.getUrl());
+                    crawl(crawlerVO);
+                }
+            }
+        }
+    }
+
+
 }
