@@ -3,9 +3,15 @@ package Raadi.application;
 import Raadi.domain.service.*;
 import Raadi.framework.RaadiFW;
 
-
+/**
+ * Entry point for Indexer application.
+ */
 public class Indexer {
 
+    /**
+     * Indexer application's main function.
+     * @param args Arguments for main function.
+     */
     @SuppressWarnings("unchecked")
     public static void main(String[] args )
     {

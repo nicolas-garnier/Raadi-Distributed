@@ -12,6 +12,7 @@ public class Crawler
      * Crawler application main function.
      * @param args Arguments for main function.
      */
+    @SuppressWarnings("unchecked")
     public static void main(String[] args) {
 
         final RaadiFW raadi = new RaadiFW();

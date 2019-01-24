@@ -1,21 +1,24 @@
 package Raadi.application;
 
+import Raadi.domain.service.CrawlerManager;
 import Raadi.framework.RaadiFW;
 
 /**
- * Entry point for CrawlerManager application.
+ * Entry point for Crawler application.
  */
-public class CrawlerManager {
+public class CrawlerApplication {
+
     /**
-     * CrawlerManager application main function.
+     * Crawler application's main function.
      * @param args Arguments for main function.
      */
+    @SuppressWarnings("unchecked")
     public static void main(String[] args) {
 
         final RaadiFW raadi = new RaadiFW();
 
         raadi.bean(Raadi.domain.service.CrawlerManager.class, new Raadi.domain.service.CrawlerManager());
-        Raadi.domain.service.CrawlerManager crawlerManager = (Raadi.domain.service.CrawlerManager) raadi.instanceOf(Raadi.domain.service.CrawlerManager.class);
+        CrawlerManager crawlerManager = (CrawlerManager) raadi.instanceOf(CrawlerManager.class);
 
         new Thread(crawlerManager::subscribeCrawlerCreated).start();
         new Thread(crawlerManager::subscribeDocumentRawCreated).start();
