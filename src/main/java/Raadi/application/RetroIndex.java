@@ -15,6 +15,6 @@ public class RetroIndex
         RetroIndexService retroIndexService = (RetroIndexService) raadi.instanceOf(RetroIndexService.class);
 
         retroIndexService.start();
-        System.out.println( "RetroIndex started" );
+        System.out.println( "RetroIndex started");
     }
 }
