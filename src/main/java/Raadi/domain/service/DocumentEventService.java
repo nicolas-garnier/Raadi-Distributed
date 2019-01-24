@@ -23,7 +23,6 @@ public class DocumentEventService {
      * Attributes.
      */
     private KConsumer consumerDocumentRawCreated;
-    private KProducer producer;
     private CleanUpService cleanUpService;
 
     /**
@@ -32,7 +31,6 @@ public class DocumentEventService {
      */
     public DocumentEventService(CleanUpService cleanUpService) {
         this.consumerDocumentRawCreated = new KConsumer("DOCUMENT_RAW_CREATED");
-        this.producer = new KProducer();
         this.cleanUpService = cleanUpService;
     }
 
@@ -66,6 +64,7 @@ public class DocumentEventService {
     @SuppressWarnings({"Duplicates", "unchecked"})
     private void publishDocumentCleanCreated(DocumentCleanEntity documentClean) {
 
+        KProducer producer = new KProducer();
         DocumentCleanCreated documentCleanCreated = new DocumentCleanCreated(documentClean);
         System.out.println("PUBLISH DOCUMENT CLEAN CREATED");
         String topicName = "DOCUMENT_CLEAN_CREATED";

@@ -24,7 +24,6 @@ public class QueryEventService {
      * Attributes.
      */
     private KConsumer consumerTokenizeQuery;
-    private KProducer producer;
     private TokenizationService tokenizationService;
 
     /**
@@ -33,7 +32,6 @@ public class QueryEventService {
      */
     public QueryEventService(TokenizationService tokenizationService) {
         this.consumerTokenizeQuery = new KConsumer("TOKENIZE_QUERY");
-        this.producer = new KProducer();
         this.tokenizationService = tokenizationService;
     }
 
@@ -67,6 +65,7 @@ public class QueryEventService {
     @SuppressWarnings({"Duplicates", "unchecked"})
     private void publishQueryTokenized(HashMap<String, TokenDataEntity> vector) {
 
+        KProducer producer = new KProducer();
         QueryTokenized queryTokenized = new QueryTokenized(vector);
         System.out.println("PUBLISH QUERY TOKENIZED");
         String topicName = "QUERY_TOKENIZED";

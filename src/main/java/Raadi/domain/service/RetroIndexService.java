@@ -21,16 +21,23 @@ import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+/**
+ * Retro indexer service class.
+ */
 public class RetroIndexService
 {
+    /**
+     * Attributes.
+     */
     private KConsumer consumerDocumentCleanCreated;
     private KConsumer consumerProcessQuery;
 
-    public RetroIndexService()
-    {
+    /**
+     * Retro indexer service constructor.
+     */
+    public RetroIndexService() {
         consumerDocumentCleanCreated = new KConsumer("DOCUMENT_CLEAN_CREATED");
         consumerProcessQuery = new KConsumer("PROCESS_QUERY");
-
     }
 
     /**
@@ -42,16 +49,17 @@ public class RetroIndexService
     }
 
     /**
-     * Retro index subscribe documentClean created.
+     * Retro indexer subscribe documentClean created.
      */
     @SuppressWarnings("InfiniteLoopStatement")
-    private void subscribeDocumentCleanCreated()
-    {
-        while (true)
-        {
-            ConsumerRecords<String, String> records = this.consumerDocumentCleanCreated.getConsumer().poll(Duration.of(1000, ChronoUnit.MILLIS));
-            for (ConsumerRecord<String, String> record : records)
-            {
+    private void subscribeDocumentCleanCreated() {
+
+        while (true) {
+            ConsumerRecords<String, String> records = this.consumerDocumentCleanCreated
+                    .getConsumer()
+                    .poll(Duration.of(1000, ChronoUnit.MILLIS));
+
+            for (ConsumerRecord<String, String> record : records) {
                 Gson gson = new Gson();
                 Type type = new TypeToken<DocumentCleanCreated>(){}.getType();
                 DocumentCleanCreated documentCleanCreated = gson.fromJson(record.value(), type);
@@ -60,13 +68,18 @@ public class RetroIndexService
         }
     }
 
-    private void subscribeProcessQuery()
-    {
-        while (true)
-        {
-            ConsumerRecords<String, String> records = this.consumerProcessQuery.getConsumer().poll(Duration.of(1000, ChronoUnit.MILLIS));
-            for (ConsumerRecord<String, String> record : records)
-            {
+    /**
+     * Retro indexer subscribe for process on query.
+     */
+    @SuppressWarnings("InfiniteLoopStatement")
+    private void subscribeProcessQuery() {
+
+        while (true) {
+            ConsumerRecords<String, String> records = this.consumerProcessQuery
+                    .getConsumer()
+                    .poll(Duration.of(1000, ChronoUnit.MILLIS));
+
+            for (ConsumerRecord<String, String> record : records) {
                 Gson gson = new Gson();
                 Type type = new TypeToken<ProcessQuery>(){}.getType();
                 ProcessQuery processQuery = gson.fromJson(record.value(), type);
@@ -75,8 +88,12 @@ public class RetroIndexService
         }
     }
 
-    private void sendQueryResponse(HashMap<String, TokenDataEntity> vector)
-    {
+    /**
+     * Send to storage the query response's vector.
+     * @param vector Query response's vector.
+     */
+    private void sendQueryResponse(HashMap<String, TokenDataEntity> vector) {
+
         HashMap<String, DocumentCleanEntity> hashMap = this.processQuery(vector);
 
         KProducer producer = new KProducer();
@@ -85,7 +102,6 @@ public class RetroIndexService
         Type type = new TypeToken<QueryResponse>() {}.getType();
         String json = gson.toJson(queryResponse, type);
 
-        // Step 3
         producer.getProducer().send(new ProducerRecord<>("QUERY_RESPONSE", json));
         producer.getProducer().close();
     }
