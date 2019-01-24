@@ -5,19 +5,19 @@ import org.apache.kafka.clients.producer.Producer;
 
 import java.util.Properties;
 
-public class KProducer<T>
+public class KProducer
 {
+    private String PORT = "9092";
+    private Producer<String, String> producer;
 
-    private Producer<String, T> producer;
-
-    public KProducer(String port)
+    public KProducer()
     {
 
         // create instance for properties to access producer configs
         Properties props = new Properties();
 
         //Assign localhost id
-        props.put("bootstrap.servers", "127.0.0.1:"+ port);
+        props.put("bootstrap.servers", "127.0.0.1:"+ this.PORT);
 
         //Set acknowledgements for producer requests.
         props.put("acks", "all");
@@ -42,7 +42,7 @@ public class KProducer<T>
     }
 
 
-    public Producer<String, T> getProducer()
+    public Producer<String, String> getProducer()
     {
         return producer;
     }

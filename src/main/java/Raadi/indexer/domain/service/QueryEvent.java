@@ -23,8 +23,6 @@ public class QueryEvent {
     /**
      * Attributes.
      */
-    private final KConsumer<String> consumerTokenizeQuery = new KConsumer<>("TOKENIZE_QUERY", "9092");
-    private final KProducer<String> producer = new KProducer<>("9092");
 
 
      /**
@@ -33,14 +31,20 @@ public class QueryEvent {
     @SuppressWarnings("InfiniteLoopStatement")
     public void subscribeTokenizeQuery() {
 
+        KConsumer consumerTokenizeQuery = new KConsumer("TOKENIZE_QUERY");
+        System.out.println("SUBSCRIBE TOKEN QUERY");
         while (true) {
-            ConsumerRecords<String, String> records = this.consumerTokenizeQuery.getConsumer().poll(Duration.of(1000, ChronoUnit.MILLIS));
+            ConsumerRecords<String, String> records = consumerTokenizeQuery.getConsumer().poll(Duration.of(100, ChronoUnit.MILLIS));
 
             for (ConsumerRecord<String, String> record : records) {
                 Gson gson = new Gson();
                 Type type = new TypeToken<TokenizeQuery>(){}.getType();
                 TokenizeQuery tokenizeQuery = gson.fromJson(record.value(), type);
-                publishQueryTokenized(Tokenization.tokenization(tokenizeQuery.query));
+
+                // Print
+                System.out.println("TOKENIZE QUERY : "+tokenizeQuery.getQuery());
+
+                this.publishQueryTokenized(Tokenization.tokenization(tokenizeQuery.getQuery()));
             }
         }
     }
@@ -52,14 +56,14 @@ public class QueryEvent {
     @SuppressWarnings({"Duplicates", "unchecked"})
     private void publishQueryTokenized(HashMap<String, TokenData> vector) {
 
-        Producer producer = this.producer.getProducer();
+        KProducer producer = new KProducer();
         QueryTokenized queryTokenized = new QueryTokenized(vector);
 
         String topicName = "QUERY_TOKENIZED";
         Gson gson = new Gson();
         Type type = new TypeToken<QueryTokenized>() {}.getType();
         String json = gson.toJson(queryTokenized, type);
-        producer.send(new ProducerRecord<>(topicName, json));
-        producer.close();
+        producer.getProducer().send(new ProducerRecord<>(topicName, json));
+        producer.getProducer().close();
     }
 }

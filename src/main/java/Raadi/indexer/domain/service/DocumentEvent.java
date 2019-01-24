@@ -21,8 +21,8 @@ public class DocumentEvent {
     /**
      * Attributes.
      */
-    private final KConsumer<String> consumerDocumentRawCreated = new KConsumer<>("DOCUMENT_RAW_CREATED", "9092");
-    private final KProducer<String> producer = new KProducer<>("9092");
+    private final KConsumer consumerDocumentRawCreated = new KConsumer("DOCUMENT_RAW_CREATED");
+    private final KProducer producer = new KProducer();
 
     /**
      * Subscribe to an event when a DocumentRaw has been published.
@@ -36,6 +36,10 @@ public class DocumentEvent {
                 Gson gson = new Gson();
                 Type type = new TypeToken<DocumentRawCreated>(){}.getType();
                 DocumentRawCreated documentRawCreated = gson.fromJson(record.value(), type);
+
+                // Print
+                System.out.println(documentRawCreated.getDocumentRaw().getURL());
+
                 publishDocumentCleanCreated(CleanUp.cleanup(documentRawCreated.getDocumentRaw()));
             }
         }
@@ -48,7 +52,7 @@ public class DocumentEvent {
     @SuppressWarnings({"Duplicates", "unchecked"})
     public void publishDocumentCleanCreated(DocumentClean documentClean) {
 
-        Producer producer = new KProducer("9092").getProducer();
+        Producer producer = new KProducer().getProducer();
         DocumentCleanCreated documentCleanCreated = new DocumentCleanCreated(documentClean);
 
         String topicName = "DOCUMENT_CLEAN_CREATED";

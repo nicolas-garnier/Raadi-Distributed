@@ -13,7 +13,7 @@ public class Converter {
     public static HashSet<String> StopWordsJsonToHashSet() {
 
         try {
-            byte[] encoded = Files.readAllBytes(Paths.get(System.getProperty("user.dir") + "/src/main/java/RaadiFW/util/StopWords.json"));
+            byte[] encoded = Files.readAllBytes(Paths.get(System.getProperty("user.dir") + "/src/main/java/Raadi/util/StopWords.json"));
             String stopWordsString = new String(encoded, Charset.defaultCharset());
             stopWordsString = stopWordsString.substring(1, stopWordsString.length() - 1);
 
@@ -32,7 +32,7 @@ public class Converter {
 
         HashMap<String, String> synonymsHashMap = new HashMap<>();
 
-        String fileName = System.getProperty("user.dir") + "/src/main/java/RaadiFW/util/Synonyms.csv";
+        String fileName = System.getProperty("user.dir") + "/src/main/java/Raadi/util/Synonyms.csv";
         List<String> list = new ArrayList<>();
 
         try (Stream<String> stream = Files.lines(Paths.get(fileName))) {

@@ -5,12 +5,14 @@ import Raadi.entity.TokenData;
 import Raadi.indexer.domain.event.QueryTokenized;
 import Raadi.kafkahandler.KConsumer;
 import Raadi.kafkahandler.KProducer;
+import Raadi.retroindex.domain.command.TokenizeQuery;
 import Raadi.retroindex.domain.entity.RetroIndexEntity;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.producer.ProducerRecord;
+import org.omg.Messaging.SYNC_WITH_TRANSPORT;
 import spark.Request;
 import spark.Response;
 import spark.Route;
@@ -24,31 +26,41 @@ import java.util.HashMap;
 
 public class QueryService
 {
-    private KConsumer<String> consumerQueryTokenized;
-    private KProducer<String> producer;
-
     /***
      *
      * @param
      */
-    public QueryService()
+    private QueryService()
     {
     }
 
-    public void start()
+    public static QueryService getInstance()
     {
-        this.producer = new KProducer<>("9092");
-        this.consumerQueryTokenized = new KConsumer<>("QUERY_TOKENIZED", "9092");
+        return QueryService.InstanceHolder.instance;
     }
+
+    private static class InstanceHolder
+    {
+        private final static QueryService instance = new QueryService();
+    }
+
 
     public Route setQuery = (Request request, Response response) ->
     {
         String query = request.queryParams("q");
 
-        this.producer.getProducer().send(new ProducerRecord<>("TOKENIZE_TOKEN", query));
-        this.producer.getProducer().close();
+        KProducer producer = new KProducer();
+        TokenizeQuery tokenizeQuery = new TokenizeQuery(query);
+        Gson gson = new Gson();
+        Type type = new TypeToken<TokenizeQuery>() {}.getType();
+        String json = gson.toJson(tokenizeQuery, type);
 
-        return this.subscribeQueryTokenized();
+        producer.getProducer().send(new ProducerRecord<>("TOKENIZE_QUERY", json));
+        producer.getProducer().close();
+        System.out.println("QUERY : "+query);
+        this.subscribeQueryTokenized();
+
+        return "finish";
     };
 
 
@@ -58,18 +70,19 @@ public class QueryService
     private HashMap<String, DocumentClean> subscribeQueryTokenized()
     {
 
+        KConsumer consumer = new KConsumer("QUERY_TOKENIZED");
+
         while (true)
         {
-
-            ConsumerRecords<String, String> records = this.consumerQueryTokenized
-                                                        .getConsumer()
-                                                        .poll(Duration.of(100, ChronoUnit.MILLIS));
+            ConsumerRecords<String, String> records = consumer.getConsumer().poll(Duration.of(100, ChronoUnit.MILLIS));
 
             for (ConsumerRecord<String, String> record : records)
             {
+                System.out.println("WESH");
                 Gson gson = new Gson();
                 Type type = new TypeToken<QueryTokenized>(){}.getType();
                 QueryTokenized queryTokenized = gson.fromJson(record.value(), type);
+                System.out.println("QUERY TOKENIZED");
                 return this.processTokenizedQuery(queryTokenized.getVector());
             }
         }
@@ -103,6 +116,7 @@ public class QueryService
             }
         }
 
+        System.out.println(responseDocuments);
         return responseDocuments;
     }
 

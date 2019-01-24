@@ -7,7 +7,6 @@ import Raadi.entity.DocumentRaw;
 import Raadi.kafkahandler.KProducer;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.ProducerRecord;
 
 import java.lang.reflect.Type;
@@ -15,9 +14,18 @@ import java.lang.reflect.Type;
 public class CrawlerManager {
     private CrawlerEntity crawlerEntity;
 
-    public CrawlerManager() {
+    private CrawlerManager()
+    {
         this.crawlerEntity = new CrawlerEntity();
+    }
 
+    public static CrawlerManager getInstance()
+    {
+        return CrawlerManager.InstanceHolder.instance;
+    }
+
+    private static class InstanceHolder {
+        private final static CrawlerManager instance = new CrawlerManager();
     }
 
     /**
@@ -25,7 +33,7 @@ public class CrawlerManager {
      * @param firstURL the url to start
      * @param max_size Number of page wanted to visited
      */
-    private void start(String firstURL, int max_size) {
+    public void start(String firstURL, int max_size) {
         CrawlerVO crawlerVO = new CrawlerVO(firstURL);
         this.crawlerEntity.linksTodo.add(crawlerVO);
         int counter = 0;
@@ -42,28 +50,33 @@ public class CrawlerManager {
                     for(String childURL : dr.getChildrenURL()) {
                         this.crawlerEntity.linksTodo.add(new CrawlerVO(childURL));
                     }
-                    send(dr);
+                    this.send(dr);
                 }
             }
         }
+
+        this.crawlerEntity.linksTodo.clear();
     }
 
     /**
      * Notifie application via Kafka
      * @param documentRaw Document want to send
      */
-    public void send(DocumentRaw documentRaw) {
-        Producer<String, String> producer = new KProducer("9092").getProducer();
-        DocumentRawCreated documentRawCreated = new DocumentRawCreated(documentRaw);
+    public void send(DocumentRaw documentRaw)
+    {
+        System.out.println(documentRaw.getURL());
+        //System.out.println(documentRaw.getChildrenURL());
 
+        DocumentRawCreated documentRawCreated = new DocumentRawCreated(documentRaw);
         String topicName = "DOCUMENT_RAW_CREATED";
         Gson gson = new Gson();
         Type type = new TypeToken<DocumentRawCreated>(){}.getType();
         String json = gson.toJson(documentRawCreated, type);
 
-        producer.send(new ProducerRecord<>(topicName, json));
+        KProducer producer = new KProducer();
+        producer.getProducer().send(new ProducerRecord<>(topicName, json));
+        producer.getProducer().close();
 
         System.out.println("Crawler's message sent successfully");
-        producer.close();
     }
 }

@@ -18,15 +18,28 @@ import java.util.HashMap;
 
 public class RetroIndexService
 {
-    private KConsumer<String> consumerDocumentCleanCreated;
+    private KConsumer consumerDocumentCleanCreated;
+
+    private RetroIndexService()
+    {
+        consumerDocumentCleanCreated = new KConsumer("DOCUMENT_CLEAN_CREATED");
+    }
+
+
+    public static RetroIndexService getInstance()
+    {
+        return RetroIndexService.InstanceHolder.instance;
+    }
+
+    private static class InstanceHolder {
+        private final static RetroIndexService instance = new RetroIndexService();
+    }
 
     /**
      * Start function of the RetroIndexService
      */
     public void start()
     {
-        consumerDocumentCleanCreated = new KConsumer<>("DOCUMENT_CLEAN_CREATED", "9092");
-
         this.subscribeDocumentCleanCreated();
     }
 
@@ -41,8 +54,6 @@ public class RetroIndexService
                 Type type = new TypeToken<DocumentCleanCreated>(){}.getType();
                 DocumentCleanCreated documentCleanCreated = gson.fromJson(record.value(), type);
                 this.fillRetroIndex(documentCleanCreated.getDocumentClean());
-
-                //System.out.printf("offset = %d, key = %s, value = %s\n", record.offset(), record.key(), record.value());
             }
         }
     }
@@ -50,6 +61,8 @@ public class RetroIndexService
 
     public void fillRetroIndex(DocumentClean documentClean)
     {
+        System.out.println(documentClean.getURL());
+
         for (String key : documentClean.getVector().keySet())
         {
             ArrayList<DocumentClean> value = new ArrayList<>();
