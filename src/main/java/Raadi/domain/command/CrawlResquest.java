@@ -3,7 +3,7 @@ package Raadi.domain.command;
 import Raadi.domain.event.Event;
 import Raadi.domain.valueObjects.CrawlerVO;
 
-public class CrawlResquest implements Event {
+public class CrawlResquest extends Event {
     private String id;
     private CrawlerVO URL;
 

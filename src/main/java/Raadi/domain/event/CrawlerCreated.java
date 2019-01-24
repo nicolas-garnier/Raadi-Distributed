@@ -1,6 +1,6 @@
 package Raadi.domain.event;
 
-public class CrawlerCreated implements Event {
+public class CrawlerCreated extends Event {
     private String idCrawlerService;
     private String URL;
 
