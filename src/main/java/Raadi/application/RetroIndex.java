@@ -1,5 +1,6 @@
 package Raadi.application;
 
+import Raadi.domain.entity.RetroIndexEntity;
 import Raadi.domain.service.RetroIndexService;
 import Raadi.framework.RaadiFW;
 
@@ -11,7 +12,10 @@ public class RetroIndex
     {
         final RaadiFW raadi = new RaadiFW();
 
-        raadi.bean(RetroIndexService.class, new RetroIndex());
+        raadi.bean(RetroIndexEntity.class, new RetroIndexEntity());
+        RetroIndexEntity retroIndexEntity = (RetroIndexEntity) raadi.instanceOf(RetroIndexEntity.class);
+
+        raadi.bean(RetroIndexService.class, new RetroIndexService(retroIndexEntity));
         RetroIndexService retroIndexService = (RetroIndexService) raadi.instanceOf(RetroIndexService.class);
 
         retroIndexService.start();
