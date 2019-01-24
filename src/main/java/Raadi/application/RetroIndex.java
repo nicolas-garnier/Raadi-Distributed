@@ -1,14 +1,20 @@
 package Raadi.application;
 
 import Raadi.domain.service.RetroIndexService;
+import Raadi.framework.RaadiFW;
 
 
 public class RetroIndex
 {
+    @SuppressWarnings("unchecked")
     public static void main(String[] args)
     {
-        System.out.println( "RetroIndex started" );
+        final RaadiFW raadi = new RaadiFW();
 
-        RetroIndexService.getInstance().start();
+        raadi.bean(RetroIndexService.class, new RetroIndex());
+        RetroIndexService retroIndexService = (RetroIndexService) raadi.instanceOf(RetroIndexService.class);
+
+        retroIndexService.start();
+        System.out.println( "RetroIndex started" );
     }
 }

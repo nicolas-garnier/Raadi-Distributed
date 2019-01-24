@@ -20,32 +20,21 @@ public class RetroIndexService
 {
     private KConsumer consumerDocumentCleanCreated;
 
-    private RetroIndexService()
-    {
-        consumerDocumentCleanCreated = new KConsumer("DOCUMENT_CLEAN_CREATED");
-    }
-
-
-    public static RetroIndexService getInstance()
-    {
-        return RetroIndexService.InstanceHolder.instance;
-    }
-
-    private static class InstanceHolder {
-        private final static RetroIndexService instance = new RetroIndexService();
+    public RetroIndexService() {
+        this.consumerDocumentCleanCreated = new KConsumer("DOCUMENT_CLEAN_CREATED");
     }
 
     /**
-     * Start function of the RetroIndexService
+     * Start function of the RetroIndexService.
      */
-    public void start()
-    {
+    public void start() {
         this.subscribeDocumentCleanCreated();
     }
 
     /**
-     * Retrox index subscribe documentClean created
+     * Retro index subscribe documentClean created.
      */
+    @SuppressWarnings("InfiniteLoopStatement")
     private void subscribeDocumentCleanCreated()
     {
         while (true)
@@ -62,27 +51,23 @@ public class RetroIndexService
     }
 
     /**
-     * Retrox index service
-     * @param documentClean
+     * Retrox index service.
+     * @param documentClean Document clean to fill.
      */
-    public void fillRetroIndex(DocumentCleanEntity documentClean)
-    {
+    private void fillRetroIndex(DocumentCleanEntity documentClean) {
+
         System.out.println(documentClean.getURL());
 
-        for (String key : documentClean.getVector().keySet())
-        {
-            ArrayList<DocumentCleanEntity> value = new ArrayList<>();
+        for (String key : documentClean.getVector().keySet()) {
 
+            ArrayList<DocumentCleanEntity> value = new ArrayList<>();
             HashMap<String, ArrayList<DocumentCleanEntity>> retroIndex = RetroIndexEntity.getInstance().getRetroIndex();
 
-            if (retroIndex.containsKey(key))
-            {
+            if (retroIndex.containsKey(key)) {
                 value = retroIndex.get(key);
             }
-
             value.add(documentClean);
             retroIndex.put(key, value);
-
             RetroIndexEntity.getInstance().setRetroIndex(retroIndex);
         }
     }
