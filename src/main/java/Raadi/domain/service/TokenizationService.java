@@ -22,11 +22,12 @@ public class TokenizationService {
 
         for (int i = 0; i < arrWords.length; i++)
         {
+
             final int position = i;
             String token = arrWords[i];
 
             // The word already exists.
-            if (vector.containsKey(arrWords[i]))
+            if (vector.containsKey(token))
             {
                 // Push new position in array positions.
                 ArrayList<Integer> positions = vector.get(token).getPositions();

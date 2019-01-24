@@ -3,7 +3,6 @@ package Raadi.domain.service;
 import Raadi.domain.command.ProcessQuery;
 import Raadi.domain.command.TokenizeQuery;
 import Raadi.domain.entity.DocumentCleanEntity;
-import Raadi.domain.entity.RetroIndexEntity;
 import Raadi.domain.entity.TokenDataEntity;
 import Raadi.domain.event.QueryResponse;
 import Raadi.domain.event.QueryTokenized;
@@ -26,6 +25,7 @@ import java.util.HashMap;
 
 public class QueryService
 {
+
     public QueryService()
     {
     }
@@ -50,9 +50,9 @@ public class QueryService
         producer.getProducer().send(new ProducerRecord<>("TOKENIZE_QUERY", json));
         producer.getProducer().close();
         System.out.println("QUERY : "+query);
-        return this.subscribeQueryTokenized();
+        this.subscribeQueryTokenized();
 
-        //return "finish";
+        return "finish";
     };
 
 
@@ -112,6 +112,7 @@ public class QueryService
                 Type type = new TypeToken<QueryResponse>(){}.getType();
                 QueryResponse queryResponse = gson.fromJson(record.value(), type);
                 System.out.println("QUERY RESPONSE");
+
                 return queryResponse.getResponses();
             }
         }

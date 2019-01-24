@@ -46,9 +46,10 @@ public class RetroIndexService
     /**
      * Start function of the RetroIndexService.
      */
-    public void start() {
-        this.subscribeDocumentCleanCreated();
-        this.subscribeProcessQuery();
+    public void start()
+    {
+        new Thread(this::subscribeDocumentCleanCreated).start();
+        new Thread(this::subscribeProcessQuery).start();
     }
 
     /**
@@ -57,6 +58,7 @@ public class RetroIndexService
     @SuppressWarnings("InfiniteLoopStatement")
     private void subscribeDocumentCleanCreated() {
 
+        System.out.println("SUBSCRIBE DOCUMENT CLEAN");
         while (true) {
             ConsumerRecords<String, String> records = this.consumerDocumentCleanCreated
                     .getConsumer()
@@ -77,6 +79,7 @@ public class RetroIndexService
     @SuppressWarnings("InfiniteLoopStatement")
     private void subscribeProcessQuery() {
 
+        System.out.println("SUBSCRIBE PROCESS QUERY");
         while (true) {
             ConsumerRecords<String, String> records = this.consumerProcessQuery
                     .getConsumer()
@@ -135,6 +138,8 @@ public class RetroIndexService
 
         HashMap<String, DocumentCleanEntity> responseDocuments = new HashMap<>();
         HashMap<String, ArrayList<DocumentCleanEntity>> retroIndex = retroIndexEntity.getRetroIndex();
+
+        //System.out.println(vector);
 
         if (vector == null)
             return responseDocuments;

@@ -53,7 +53,8 @@ public class QueryEventService {
                 TokenizeQuery tokenizeQuery = gson.fromJson(record.value(), type);
 
                 System.out.println("TOKENIZE QUERY : "+tokenizeQuery.getQuery());
-                this.publishQueryTokenized(tokenizationService.tokenization(tokenizeQuery.getQuery()));
+                HashMap<String, TokenDataEntity> tokens = tokenizationService.tokenization(tokenizeQuery.getQuery());
+                this.publishQueryTokenized(tokens);
             }
         }
     }
@@ -65,6 +66,7 @@ public class QueryEventService {
     @SuppressWarnings({"Duplicates", "unchecked"})
     private void publishQueryTokenized(HashMap<String, TokenDataEntity> vector) {
 
+        System.out.println(vector);
         KProducer producer = new KProducer();
         QueryTokenized queryTokenized = new QueryTokenized(vector);
         System.out.println("PUBLISH QUERY TOKENIZED");
