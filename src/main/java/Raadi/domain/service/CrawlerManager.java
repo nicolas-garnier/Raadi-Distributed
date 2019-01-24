@@ -1,7 +1,7 @@
 package Raadi.domain.service;
 
 import Raadi.domain.entity.CrawlerEntity;
-import Raadi.domain.command.CrawlResquest;
+import Raadi.domain.command.CrawlRequest;
 import Raadi.domain.event.CrawlerCreated;
 import Raadi.domain.event.DocumentRawCreated;
 import Raadi.domain.valueObjects.CrawlerVO;
@@ -113,12 +113,12 @@ public class CrawlerManager {
      * @param URL URL to crawl
      */
     private void sendCrawlRequest(String idCrawler, CrawlerVO URL) {
-        CrawlResquest crawlResquest = new CrawlResquest(idCrawler, URL);
+        CrawlRequest crawlRequest = new CrawlRequest(idCrawler, URL);
         String topicName = "CRAWL_REQUEST";
 
         Gson gson = new Gson();
-        Type type = new TypeToken<CrawlResquest>(){}.getType();
-        String json = gson.toJson(crawlResquest, type);
+        Type type = new TypeToken<CrawlRequest>(){}.getType();
+        String json = gson.toJson(crawlRequest, type);
 
         KProducer producer = new KProducer();
         producer.getProducer().send(new ProducerRecord<>(topicName, json));

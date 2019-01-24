@@ -1,6 +1,6 @@
 package Raadi.domain.service;
 
-import Raadi.domain.command.CrawlResquest;
+import Raadi.domain.command.CrawlRequest;
 import Raadi.domain.event.CrawlerCreated;
 import Raadi.domain.event.DocumentRawCreated;
 import Raadi.domain.valueObjects.CrawlerVO;
@@ -139,12 +139,12 @@ public final class CrawlerService {
             for (ConsumerRecord<String, String> record : records) {
 
                 Gson gson = new Gson();
-                Type type = new TypeToken<CrawlResquest>(){}.getType();
-                CrawlResquest crawlResquest = gson.fromJson(record.value(), type);
+                Type type = new TypeToken<CrawlRequest>(){}.getType();
+                CrawlRequest crawlRequest = gson.fromJson(record.value(), type);
 
-                String id = crawlResquest.getId();
+                String id = crawlRequest.getId();
                 if (this.id.equals(id)) {
-                    CrawlerVO crawlerVO = crawlResquest.getURL();
+                    CrawlerVO crawlerVO = crawlRequest.getURL();
                     System.out.println("CRAWL REQUEST : " + crawlerVO.getUrl());
                     crawl(crawlerVO);
                 }
